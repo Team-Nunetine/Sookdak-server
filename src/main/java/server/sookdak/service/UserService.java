@@ -40,12 +40,6 @@ public class UserService {
         return UserResponseDto.toUserResponseDto(userEmail, user.getAuthority());
     }
 
-    public User findById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_FOUND));
-    }
-
-
     public TokenDto login(UserRequestDto userRequestDto) {
         if (!(userRequestDto.getEmail().contains("sookmyung.ac.kr") || userRequestDto.getEmail().contains("sm.ac.kr"))) {
             throw new CustomException(ExceptionCode.SOOKMYUNG_ONLY);

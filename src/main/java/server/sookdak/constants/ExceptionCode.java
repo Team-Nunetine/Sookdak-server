@@ -9,6 +9,9 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum ExceptionCode {
+    /* 400 - 잘못된 요청 */
+
+    /* 401 - 인증 실패 */
     // token 관련
     WRONG_TYPE_TOKEN(UNAUTHORIZED, "잘못된 JWT 서명을 가진 토큰입니다."),
     EXPIRED_TOKEN(UNAUTHORIZED, "만료된 JWT 토큰입니다."),
@@ -23,7 +26,10 @@ public enum ExceptionCode {
     SOOKMYUNG_ONLY(FORBIDDEN, "숙명 계정으로 로그인해야 합니다."),
 
     /* 404 - 찾을 수 없는 리소스 */
-    MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다.");
+    MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다."),
+
+    /* 409 - 중복된 리소스 */
+    DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다.");
 
     private final HttpStatus status;
     private final String message;

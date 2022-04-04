@@ -7,36 +7,46 @@ import server.sookdak.domain.Board;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.BoardSaveRequestDto;
 import server.sookdak.dto.res.BoardListResponseDto;
+import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
+import server.sookdak.repository.UserRepository;
+import server.sookdak.util.SecurityUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static server.sookdak.constants.ExceptionCode.*;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<BoardListResponseDto> findAllDesc(){
+    public List<BoardListResponseDto> findAllDesc() {
         return boardRepository.findAllDesc().stream()
                 .map(BoardListResponseDto::new)
                 .collect(Collectors.toList());
     }
 
+    public void saveBoard(BoardSaveRequestDto boardSaveRequestDto) {
+        // 현재 로그인한 유저 찾기
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-    public Long SaveBoard(Long userId, BoardSaveRequestDto boardSaveRequestDto){
-        User user = userService.findById(userId);
-        Board board = Board.builder()
-                .name(boardSaveRequestDto.getName())
-                .description((boardSaveRequestDto.getDescription()))
-                .build();
-        Board savedBoard = boardRepository.save(board);
-        user.createBoard(savedBoard);
-        return savedBoard.getBoardId();
+        // board 객체 생성
+        Board board = Board.createBoard(boardSaveRequestDto.getName(), boardSaveRequestDto.getDescription());
 
+        // board 저장
+        if (boardRepository.existsByName(boardSaveRequestDto.getName())) {
+            // 이름 중복 시 에러 처리
+            throw new CustomException(DUPLICATE_BOARD_NAME);
+        } else {
+            boardRepository.save(board);
+        }
     }
 
 }
