@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BaseResponse {
 
-    private Boolean succcess;
+    private Boolean success;
     private String message;
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public BaseResponse(Boolean success, String message) {
-        this.succcess = success;
+        this.success = success;
         this.message = message;
     }
 
