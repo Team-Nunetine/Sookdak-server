@@ -28,8 +28,9 @@ public class Board {
 
     private String description;
 
-    public static Board createBoard(String name, String description) {
+    public static Board createBoard(User user, String name, String description) {
         Board board = new Board();
+        board.user = user;
         board.name = name;
         board.description = description;
         return board;

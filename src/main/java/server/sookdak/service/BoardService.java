@@ -40,7 +40,7 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         // board 객체 생성
-        Board board = Board.createBoard(boardSaveRequestDto.getName(), boardSaveRequestDto.getDescription());
+        Board board = Board.createBoard(user, boardSaveRequestDto.getName(), boardSaveRequestDto.getDescription());
 
         // board 저장
         if (boardRepository.existsByName(boardSaveRequestDto.getName())) {
