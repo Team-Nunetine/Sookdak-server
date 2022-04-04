@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.constants.SuccessCode;
 import server.sookdak.dto.req.BoardSaveRequestDto;
+import server.sookdak.dto.res.BoardListResponse;
 import server.sookdak.dto.res.BoardListResponseDto;
 import server.sookdak.dto.res.BoardResponse;
 import server.sookdak.dto.res.UserResponse;
@@ -23,8 +24,10 @@ public class BoardApi {
     private final BoardService boardService;
 
     @GetMapping()
-    public List<BoardListResponseDto> findAll() {
-        return boardService.findAllDesc();
+    public ResponseEntity<BoardListResponse> findAll() {
+        BoardListResponseDto responseDto = boardService.findAllDesc();
+
+        return BoardListResponse.newResponse(BOARD_READ_SUCCESS, responseDto);
     }
 
     @PostMapping("/save")
