@@ -4,6 +4,8 @@ import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +28,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @OneToMany(mappedBy = "user")
+    private List<Board> board = new ArrayList<>();
+
+
     public static User createUser(String email, String password, Authority authority) {
         User user = new User();
         user.email = email;
@@ -34,7 +40,10 @@ public class User {
         return user;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void setRefreshToken(String refreshToken) {this.refreshToken = refreshToken;}
+
+    public void createBoard(Board board){
+        this.board.add(board);
+        board.createdByUser(this);
     }
 }
