@@ -10,4 +10,5 @@ public interface BoardRepository extends JpaRepository<Board,Long> {
     @Query("SELECT p FROM Board p ORDER BY p.boardId DESC")
     List<Board> findAllDesc();
 
+    boolean existsByName(String name);
 }
