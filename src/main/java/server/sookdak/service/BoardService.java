@@ -7,6 +7,7 @@ import server.sookdak.domain.Board;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.BoardSaveRequestDto;
 import server.sookdak.dto.res.BoardListResponseDto;
+import server.sookdak.dto.res.BoardListResponseDto.BoardList;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
 import server.sookdak.repository.UserRepository;
@@ -25,10 +26,11 @@ public class BoardService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<BoardListResponseDto> findAllDesc() {
-        return boardRepository.findAllDesc().stream()
-                .map(BoardListResponseDto::new)
+    public BoardListResponseDto findAllDesc() {
+        List<BoardList> boards = boardRepository.findAllDesc().stream()
+                .map(BoardList::new)
                 .collect(Collectors.toList());
+        return BoardListResponseDto.of(boards);
     }
 
     public void saveBoard(BoardSaveRequestDto boardSaveRequestDto) {
