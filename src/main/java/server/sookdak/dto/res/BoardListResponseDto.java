@@ -21,10 +21,12 @@ public class BoardListResponseDto {
 
     @Getter
     public static class BoardList {
+        private Long boardId;
         private String name;
         private String description;
 
         public BoardList(Board entity){
+            this.boardId = entity.getBoardId();
             this.name = entity.getName();
             this.description = entity.getDescription();
         }
