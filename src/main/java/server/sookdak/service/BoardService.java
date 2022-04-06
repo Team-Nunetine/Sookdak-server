@@ -8,7 +8,6 @@ import server.sookdak.domain.User;
 import server.sookdak.dto.req.BoardSaveRequestDto;
 import server.sookdak.dto.res.BoardListResponseDto;
 import server.sookdak.dto.res.BoardListResponseDto.BoardList;
-import server.sookdak.dto.res.BoardResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
 import server.sookdak.repository.UserRepository;
@@ -34,7 +33,7 @@ public class BoardService {
         return BoardListResponseDto.of(boards);
     }
 
-    public BoardResponseDto saveBoard(BoardSaveRequestDto boardSaveRequestDto) {
+    public void saveBoard(BoardSaveRequestDto boardSaveRequestDto) {
         // 현재 로그인한 유저 찾기
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
@@ -42,6 +41,7 @@ public class BoardService {
 
         // board 객체 생성
         Board board = Board.createBoard(user, boardSaveRequestDto.getName(), boardSaveRequestDto.getDescription());
+
         // board 저장
         if (boardRepository.existsByName(boardSaveRequestDto.getName())) {
             // 이름 중복 시 에러 처리
@@ -49,7 +49,6 @@ public class BoardService {
         } else {
             boardRepository.save(board);
         }
-        return BoardResponseDto.of(board);
     }
 
 }
