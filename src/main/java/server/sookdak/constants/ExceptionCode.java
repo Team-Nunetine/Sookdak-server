@@ -24,9 +24,11 @@ public enum ExceptionCode {
     /* 403 - 허용되지 않은 접근 */,
     FORBIDDEN_ACCESS(FORBIDDEN, "허용되지 않은 접근입니다."),
     SOOKMYUNG_ONLY(FORBIDDEN, "숙명 계정으로 로그인해야 합니다."),
+    IMAGE_NUM_EXCESS(FORBIDDEN, "이미지 개수가 10개를 초과했습니다."),
 
     /* 404 - 찾을 수 없는 리소스 */
     MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다."),
+    BOARD_NOT_FOUND(NOT_FOUND, "게시판을 찾을 수 없습니다."),
 
     /* 409 - 중복된 리소스 */
     DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다.");
