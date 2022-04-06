@@ -31,9 +31,6 @@ public class UserApi {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody UserRequestDto userRequestDto) {
         TokenDto tokenDto = userService.login(userRequestDto);
-        if (tokenDto == null) {
-            return TokenResponse.toResponse(SIGNUP_SUCCESS, null);
-        }
 
         return TokenResponse.toResponse(LOGIN_SUCCESS, tokenDto);
     }

@@ -48,7 +48,6 @@ public class UserService {
             // signup
             User user = userRequestDto.toUser(passwordEncoder, key);
             userRepository.save(user);
-            return null;
         }
 
         //1. AuthenticationToken 생성
