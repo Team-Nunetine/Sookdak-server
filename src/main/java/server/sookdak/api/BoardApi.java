@@ -6,10 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.constants.SuccessCode;
 import server.sookdak.dto.req.BoardSaveRequestDto;
-import server.sookdak.dto.res.BoardListResponse;
-import server.sookdak.dto.res.BoardListResponseDto;
-import server.sookdak.dto.res.BoardResponse;
-import server.sookdak.dto.res.UserResponse;
+import server.sookdak.dto.res.*;
 import server.sookdak.service.BoardService;
 
 import javax.validation.Valid;
@@ -32,8 +29,7 @@ public class BoardApi {
 
     @PostMapping("/save")
     public ResponseEntity<BoardResponse> save(@Valid @RequestBody BoardSaveRequestDto boardSaveRequestDto) {
-        boardService.saveBoard(boardSaveRequestDto);
-
-        return BoardResponse.newResponse(BOARD_SAVE_SUCCESS);
+        BoardResponseDto responseDto = boardService.saveBoard(boardSaveRequestDto);
+        return BoardResponse.newResponse(BOARD_SAVE_SUCCESS,responseDto);
     }
 }
