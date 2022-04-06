@@ -8,6 +8,7 @@ import server.sookdak.domain.Post;
 import server.sookdak.domain.PostImage;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.PostSaveRequestDto;
+import server.sookdak.dto.res.PostListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
 import server.sookdak.repository.PostImageRepository;
@@ -17,10 +18,12 @@ import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static server.sookdak.constants.ExceptionCode.BOARD_NOT_FOUND;
-import static server.sookdak.constants.ExceptionCode.USER_NOT_FOUND;
+import static server.sookdak.constants.ExceptionCode.*;
+import static server.sookdak.dto.res.PostListResponseDto.*;
 
 @Service
 @Transactional
@@ -48,5 +51,29 @@ public class PostService {
         }
 
         postRepository.save(post);
+    }
+
+    public PostListResponseDto getPostList(Long boardId, String order) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
+
+        List<PostList> posts = new ArrayList<>();
+        if (order.equals("latest")) {
+            posts = postRepository.findAllByBoardOrderByCreatedAtDesc(board).stream()
+                    .map(post -> new PostList(post, postImageRepository.existsByPost(post)))
+                    .collect(Collectors.toList());
+        } else if (order.equals("popularity")) {
+            posts = postRepository.findAllByBoardOrderByLikedDescCreatedAtDesc(board).stream()
+                    .map(post -> new PostList(post, postImageRepository.existsByPost(post)))
+                    .collect(Collectors.toList());
+        } else {
+            throw new CustomException(WRONG_TYPE_ORDER);
+        }
+
+        return PostListResponseDto.of(posts);
     }
 }
