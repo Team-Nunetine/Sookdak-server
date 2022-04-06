@@ -8,7 +8,8 @@ import server.sookdak.dto.BaseResponse;
 
 @Getter
 @NoArgsConstructor
-public class BoardListResponse extends BaseResponse {
+public class
+BoardListResponse extends BaseResponse {
     BoardListResponseDto data;
 
     private BoardListResponse(Boolean success, String msg, BoardListResponseDto data) {

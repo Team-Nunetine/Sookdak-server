@@ -29,7 +29,7 @@ public class BoardApi {
 
     @PostMapping("/save")
     public ResponseEntity<BoardResponse> save(@Valid @RequestBody BoardSaveRequestDto boardSaveRequestDto) {
-        BoardResponseDto responseDto = boardService.saveBoard(boardSaveRequestDto);
-        return BoardResponse.newResponse(BOARD_SAVE_SUCCESS,responseDto);
+        BoardResponseDto boardResponseDto = boardService.saveBoard(boardSaveRequestDto);
+        return BoardResponse.newResponse(BOARD_SAVE_SUCCESS,boardResponseDto);
     }
 }
