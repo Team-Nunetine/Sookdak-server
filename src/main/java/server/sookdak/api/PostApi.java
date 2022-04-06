@@ -3,10 +3,10 @@ package server.sookdak.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.sookdak.constants.ExceptionCode;
 import server.sookdak.dto.req.PostSaveRequestDto;
+import server.sookdak.dto.res.PostListResponse;
+import server.sookdak.dto.res.PostListResponseDto;
 import server.sookdak.dto.res.PostResponse;
-import server.sookdak.exception.CustomException;
 import server.sookdak.service.PostService;
 import server.sookdak.util.S3Util;
 
@@ -47,5 +47,12 @@ public class PostApi {
         postService.savePost(postSaveRequestDto, boardId, imageURLs);
 
         return PostResponse.newResponse(POST_SAVE_SUCCESS);
+    }
+
+    @GetMapping("/{order}/{boardId}")
+    public ResponseEntity<PostListResponse> postList(@PathVariable Long boardId, @PathVariable String order) {
+        PostListResponseDto responseDto = postService.getPostList(boardId, order);
+
+        return PostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }
 }
