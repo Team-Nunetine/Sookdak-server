@@ -10,6 +10,7 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public enum ExceptionCode {
     /* 400 - 잘못된 요청 */
+    WRONG_TYPE_ORDER(BAD_REQUEST, "잘못된 order type 입니다."),
 
     /* 401 - 인증 실패 */
     // token 관련
