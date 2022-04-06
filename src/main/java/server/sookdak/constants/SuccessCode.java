@@ -15,7 +15,9 @@ public enum SuccessCode {
     REISSUE_SUCCESS(OK, "토큰 재발급에 성공했습니다."),
 
     BOARD_SAVE_SUCCESS(OK, "게시판 추가에 성공했습니다."),
-    BOARD_READ_SUCCESS(OK, "게시판 조회에 성공했습니다.");
+    BOARD_READ_SUCCESS(OK, "게시판 조회에 성공했습니다."),
+
+    POST_SAVE_SUCCESS(OK, "게시글 저장에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;

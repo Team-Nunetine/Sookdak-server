@@ -3,6 +3,7 @@ package server.sookdak.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,4 +28,10 @@ public class RestExceptionHandler {
         return BaseResponse.toBasicErrorResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
+    // @ModelAttribute valid 에러
+    @ExceptionHandler(value = { BindException.class })
+    protected ResponseEntity<BaseResponse> handleMethodArgNotValidException(BindException e, HttpServletRequest request) {
+        log.warn(String.format("[400 Error] : %s %s", request.getMethod(), request.getRequestURI()));
+        return BaseResponse.toBasicErrorResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
 }

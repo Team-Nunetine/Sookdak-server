@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/user/**").permitAll() //인증 없이 접근 허용
                 .antMatchers("/api/board/**").permitAll()
+                .antMatchers("/api/post/**").permitAll()
                 .anyRequest().authenticated() //나머지 요청은 모두 인증 필요
 
                 //JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스 적용
