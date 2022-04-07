@@ -32,4 +32,10 @@ public class BoardApi {
         BoardResponseDto responseDto = boardService.saveBoard(boardSaveRequestDto);
         return BoardResponse.newResponse(BOARD_SAVE_SUCCESS,responseDto);
     }
+
+    @DeleteMapping("/{BoardId}")
+    public ResponseEntity<BoardResponse> delete(@PathVariable Long BoardId){
+        BoardResponseDto responseDto = boardService.delete(BoardId);
+        return BoardResponse.newResponse(BOARD_DELETE_SUCCESS,responseDto);
+    }
 }
