@@ -2,16 +2,14 @@ package server.sookdak.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.sookdak.constants.SuccessCode;
+import server.sookdak.dto.res.StarListResponse;
+import server.sookdak.dto.res.StarListResponseDto;
 import server.sookdak.dto.res.StarResponse;
 import server.sookdak.service.StarService;
 
-import static server.sookdak.constants.SuccessCode.STAR_CANCEL_SUCCESS;
-import static server.sookdak.constants.SuccessCode.STAR_SUCCESS;
+import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,5 +26,12 @@ public class StarApi {
         } else {
             return StarResponse.newResponse(STAR_CANCEL_SUCCESS);
         }
+    }
+
+    @GetMapping()
+    public ResponseEntity<StarListResponse> starList() {
+        StarListResponseDto responseDto = starService.getStarList();
+
+        return StarListResponse.newResponse(STAR_INFO_SUCCESS, responseDto);
     }
 }
