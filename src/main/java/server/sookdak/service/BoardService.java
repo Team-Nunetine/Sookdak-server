@@ -53,4 +53,12 @@ public class BoardService {
         return BoardResponseDto.of(board);
     }
 
-}
+    public BoardResponseDto delete(Long BoardId) {
+        Board board = boardRepository.findById(BoardId)
+                .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
+        boardRepository.delete(board);
+        return BoardResponseDto.of(board);
+    }
+    }
+
+
