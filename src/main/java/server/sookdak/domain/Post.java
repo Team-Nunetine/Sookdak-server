@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -30,6 +32,9 @@ public class Post {
     private String createdAt;
 
     private Long liked;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostImage> images = new ArrayList<>();
 
     public static Post createPost(User user, Board board, String content, String createdAt) {
         Post post = new Post();
