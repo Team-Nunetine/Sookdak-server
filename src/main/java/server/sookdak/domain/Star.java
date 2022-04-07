@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,11 +25,14 @@ public class Star {
     @MapsId("boardId")
     private Board board;
 
+    private LocalDateTime createdAt;
+
     public static Star createStar(User user, Board board) {
         Star star = new Star();
         star.starId = new StarId(user.getUserId(), board.getBoardId());
         star.user = user;
         star.board = board;
+        star.createdAt = LocalDateTime.now();
         return star;
     }
 }
