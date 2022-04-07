@@ -18,7 +18,10 @@ public enum SuccessCode {
     BOARD_READ_SUCCESS(OK, "게시판 조회에 성공했습니다."),
 
     POST_SAVE_SUCCESS(OK, "게시글 저장에 성공했습니다."),
-    POST_LIST_READ_SUCCESS(OK, "게시글 목록 조회에 성공했습니다.");
+    POST_LIST_READ_SUCCESS(OK, "게시글 목록 조회에 성공했습니다."),
+
+    STAR_SUCCESS(OK, "게시판 즐겨찾기에 성공했습니다."),
+    STAR_CANCEL_SUCCESS(OK, "게시판 즐겨찾기 취소에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;
