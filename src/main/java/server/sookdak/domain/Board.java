@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +29,9 @@ public class Board {
     private String name;
 
     private String description;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Star> stars = new ArrayList<>();
 
     public static Board createBoard(User user, String name, String description) {
         Board board = new Board();
