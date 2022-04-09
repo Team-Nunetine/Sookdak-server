@@ -3,6 +3,8 @@ package server.sookdak.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 
     @Column(length = 2000)
@@ -31,10 +35,11 @@ public class Post {
 
     private String createdAt;
 
-    private Long liked;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> likes = new ArrayList<>();
 
     public static Post createPost(User user, Board board, String content, String createdAt) {
         Post post = new Post();
@@ -42,7 +47,6 @@ public class Post {
         post.board = board;
         post.content = content;
         post.createdAt = createdAt;
-        post.liked = 0L;
         return post;
     }
 }
