@@ -24,14 +24,14 @@ public class PostListResponseDto {
         private Long postId;
         private String content;
         private String createdAt;
-        private Long liked;
+        private int likes;
         private boolean image;
 
-        public PostList(Post entity, boolean image) {
+        public PostList(Post entity, boolean image, int likes) {
             this.postId = entity.getPostId();
             this.content = entity.getContent();
             this.createdAt = entity.getCreatedAt();
-            this.liked = entity.getLiked();
+            this.likes = likes;
             this.image = image;
         }
     }

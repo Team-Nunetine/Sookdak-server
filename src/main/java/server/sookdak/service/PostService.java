@@ -3,23 +3,18 @@ package server.sookdak.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import server.sookdak.domain.Board;
-import server.sookdak.domain.Post;
-import server.sookdak.domain.PostImage;
-import server.sookdak.domain.User;
+import server.sookdak.domain.*;
 import server.sookdak.dto.req.PostSaveRequestDto;
 import server.sookdak.dto.res.PostListResponseDto;
 import server.sookdak.exception.CustomException;
-import server.sookdak.repository.BoardRepository;
-import server.sookdak.repository.PostImageRepository;
-import server.sookdak.repository.PostRepository;
-import server.sookdak.repository.UserRepository;
+import server.sookdak.repository.*;
 import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static server.sookdak.constants.ExceptionCode.*;
@@ -31,6 +26,7 @@ import static server.sookdak.dto.res.PostListResponseDto.*;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
     private final PostImageRepository postImageRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
@@ -63,17 +59,36 @@ public class PostService {
 
         List<PostList> posts = new ArrayList<>();
         if (order.equals("latest")) {
-            posts = postRepository.findAllByBoardOrderByCreatedAtDesc(board).stream()
-                    .map(post -> new PostList(post, postImageRepository.existsByPost(post)))
+            posts = postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(board).stream()
+                    .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
                     .collect(Collectors.toList());
         } else if (order.equals("popularity")) {
-            posts = postRepository.findAllByBoardOrderByLikedDescCreatedAtDesc(board).stream()
-                    .map(post -> new PostList(post, postImageRepository.existsByPost(post)))
+            posts = postRepository.findAllByBoardOrderByLikesDescCreatedAtDesc(board).stream()
+                    .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
                     .collect(Collectors.toList());
         } else {
             throw new CustomException(WRONG_TYPE_ORDER);
         }
 
         return PostListResponseDto.of(posts);
+    }
+
+    public boolean clickPostLike(Long postId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        Optional<PostLike> existPostLike = postLikeRepository.findByUserAndPost(user, post);
+        if (existPostLike.isPresent()) {
+            postLikeRepository.delete(existPostLike.get());
+            return false;
+        } else {
+            PostLike postLike = PostLike.createPostLike(user, post);
+            postLikeRepository.save(postLike);
+            return true;
+        }
     }
 }
