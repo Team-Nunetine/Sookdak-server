@@ -55,4 +55,15 @@ public class PostApi {
 
         return PostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<PostResponse> postLike(@PathVariable Long postId) {
+        boolean response = postService.clickPostLike(postId);
+        if (response) {
+            return PostResponse.newResponse(LIKE_SUCCESS);
+        } else {
+            return PostResponse.newResponse(LIKE_CANCEL_SUCCESS);
+        }
+    }
+
 }
