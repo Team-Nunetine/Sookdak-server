@@ -1,6 +1,7 @@
 package server.sookdak.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
@@ -28,6 +29,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostImageRepository postImageRepository;
+    private final StarRepsository starRepsository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
@@ -49,7 +51,7 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public PostListResponseDto getPostList(Long boardId, String order) {
+    public PostListResponseDto getPostList(Long boardId, String order, int page) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -58,19 +60,21 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
 
         List<PostList> posts = new ArrayList<>();
+        PageRequest pageRequest = PageRequest.of(page, 20);
         if (order.equals("latest")) {
-            posts = postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(board).stream()
+            posts = postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(board, pageRequest).stream()
                     .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
                     .collect(Collectors.toList());
         } else if (order.equals("popularity")) {
-            posts = postRepository.findAllByBoardOrderByLikesDescCreatedAtDesc(board).stream()
+            posts = postRepository.findAllByBoardOrderByLikesDescCreatedAtDesc(board, pageRequest).stream()
                     .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
                     .collect(Collectors.toList());
         } else {
             throw new CustomException(WRONG_TYPE_ORDER);
         }
 
-        return PostListResponseDto.of(posts);
+        boolean isStar = starRepsository.existsByUserAndBoard(user, board);
+        return PostListResponseDto.of(isStar, posts);
     }
 
     public boolean clickPostLike(Long postId) {

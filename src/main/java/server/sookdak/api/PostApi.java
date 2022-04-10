@@ -49,9 +49,9 @@ public class PostApi {
         return PostResponse.newResponse(POST_SAVE_SUCCESS);
     }
 
-    @GetMapping("/{order}/{boardId}")
-    public ResponseEntity<PostListResponse> postList(@PathVariable Long boardId, @PathVariable String order) {
-        PostListResponseDto responseDto = postService.getPostList(boardId, order);
+    @GetMapping("/{order}/{boardId}/{page}")
+    public ResponseEntity<PostListResponse> postList(@PathVariable Long boardId, @PathVariable String order, @PathVariable int page) {
+        PostListResponseDto responseDto = postService.getPostList(boardId, order, page);
 
         return PostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }

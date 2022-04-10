@@ -9,14 +9,16 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class PostListResponseDto {
+    private boolean star;
     private List<PostList> posts;
 
-    private PostListResponseDto(List<PostList> posts) {
+    private PostListResponseDto(boolean star, List<PostList> posts) {
+        this.star = star;
         this.posts = posts;
     }
 
-    public static PostListResponseDto of(List<PostList> posts) {
-        return new PostListResponseDto(posts);
+    public static PostListResponseDto of(boolean star, List<PostList> posts) {
+        return new PostListResponseDto(star, posts);
     }
 
     @Getter
