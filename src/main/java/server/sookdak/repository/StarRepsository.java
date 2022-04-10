@@ -13,5 +13,7 @@ public interface StarRepsository extends JpaRepository<Star, StarId> {
 
     Optional<Star> findByUserAndBoard(User user, Board board);
 
+    boolean existsByUserAndBoard(User user, Board board);
+
     List<Star> findAllByUserOrderByCreatedAtAsc(User user);
 }
