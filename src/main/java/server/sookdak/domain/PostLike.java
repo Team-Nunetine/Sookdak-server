@@ -3,6 +3,8 @@ package server.sookdak.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -22,6 +24,7 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     @MapsId("postId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
     public static PostLike createPostLike(User user, Post post) {

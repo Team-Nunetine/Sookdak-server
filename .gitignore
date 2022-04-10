@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/application.yml
+.Ds_store
+src/.Ds_Store
 
 ### STS ###
 .apt_generated
