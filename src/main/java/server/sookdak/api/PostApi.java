@@ -66,4 +66,14 @@ public class PostApi {
         }
     }
 
+    @PostMapping("/{postId}/scrap")
+    public ResponseEntity<PostResponse> postScrap(@PathVariable Long postId){
+        boolean response = postService.clickPostScrap(postId);
+        if(response) {
+            return PostResponse.newResponse(SCRAP_SUCCESS);
+        } else{
+            return PostResponse.newResponse(SCRAP_DELETE_SUCCESS);
+        }
+    }
+
 }
