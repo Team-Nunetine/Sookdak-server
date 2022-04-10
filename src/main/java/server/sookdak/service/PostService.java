@@ -32,6 +32,7 @@ public class PostService {
     private final StarRepsository starRepsository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final PostScrapRepository postScrapRepository;
 
     public void savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
@@ -94,5 +95,25 @@ public class PostService {
             postLikeRepository.save(postLike);
             return true;
         }
+    }
+
+    public boolean clickPostScrap(Long postId){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        Optional<PostScrap> existPostScrap = postScrapRepository.findByUserAndPost(user,post);
+        if(existPostScrap.isPresent()){
+            postScrapRepository.delete(existPostScrap.get());
+            return false;
+        }else{
+            PostScrap postScrap = PostScrap.createPostScrap(user,post);
+            postScrapRepository.save(postScrap);
+            return true;
+        }
+
+
     }
 }
