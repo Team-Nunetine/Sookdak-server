@@ -60,7 +60,7 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
 
         List<PostList> posts = new ArrayList<>();
-        PageRequest pageRequest = PageRequest.of(page, 10);
+        PageRequest pageRequest = PageRequest.of(page, 20);
         if (order.equals("latest")) {
             posts = postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(board, pageRequest).stream()
                     .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
