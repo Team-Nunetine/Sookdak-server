@@ -1,14 +1,18 @@
 package server.sookdak.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.Board;
 import server.sookdak.domain.Star;
 import server.sookdak.domain.User;
+import server.sookdak.dto.res.HomeResponseDto;
+import server.sookdak.dto.res.HomeResponseDto.StarBoardList;
 import server.sookdak.dto.res.StarListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
+import server.sookdak.repository.PostRepository;
 import server.sookdak.repository.StarRepsository;
 import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
@@ -29,6 +33,7 @@ public class StarService {
     private final StarRepsository starRepsository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final PostRepository postRepository;
 
     public boolean clickStar(Long boardId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
@@ -59,5 +64,19 @@ public class StarService {
                 .collect(Collectors.toList());
 
         return StarListResponseDto.of(stars);
+    }
+
+    public HomeResponseDto getHome() {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
+        List<StarBoardList> starBoardLists = starRepsository.findAllByUserOrderByCreatedAtAsc(user).stream()
+                .map(star -> new StarBoardList(star, postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(star.getBoard(), pageRequest)))
+                .collect(Collectors.toList());
+
+        return HomeResponseDto.of(starBoardLists);
     }
 }
