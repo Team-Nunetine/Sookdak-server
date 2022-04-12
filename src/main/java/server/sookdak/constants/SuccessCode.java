@@ -27,7 +27,7 @@ public enum SuccessCode {
     LIKE_SUCCESS(OK, "게시글 공감에 성공했습니다."),
     LIKE_CANCEL_SUCCESS(OK, "게시글 공감 취소에 성공했습니다."),
 
-    HOME_INFO_SUCCESS(OK, "홈 조회에 성공했습니다.");
+    HOME_INFO_SUCCESS(OK, "홈 조회에 성공했습니다."),
 
     SCRAP_SUCCESS(OK, "게시글 스크랩에 성공했습니다."),
     SCRAP_DELETE_SUCCESS(OK, "게시글 스크랩 취소에 성공했습니다.");
