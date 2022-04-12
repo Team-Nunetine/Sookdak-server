@@ -22,6 +22,7 @@ public class PostListResponseDto {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class PostList {
         private Long postId;
         private String content;
@@ -35,6 +36,20 @@ public class PostListResponseDto {
             this.createdAt = entity.getCreatedAt();
             this.likes = likes;
             this.image = image;
+        }
+
+        public static PostList of(Post post) {
+            PostList postList = new PostList();
+            postList.postId = post.getPostId();
+            postList.content = post.getContent();
+            postList.createdAt = post.getCreatedAt();
+            postList.likes = post.getLikes().size();
+            if (post.getImages().size() > 0) {
+                postList.image = true;
+            } else {
+                postList.image = false;
+            }
+            return postList;
         }
     }
 }
