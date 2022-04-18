@@ -86,6 +86,10 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
+        if (post.getUser() == user) {
+            throw new CustomException(LIKE_DENIED);
+        }
+
         Optional<PostLike> existPostLike = postLikeRepository.findByUserAndPost(user, post);
         if (existPostLike.isPresent()) {
             postLikeRepository.delete(existPostLike.get());
