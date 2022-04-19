@@ -26,6 +26,7 @@ public enum ExceptionCode {
     FORBIDDEN_ACCESS(FORBIDDEN, "허용되지 않은 접근입니다."),
     SOOKMYUNG_ONLY(FORBIDDEN, "숙명 계정으로 로그인해야 합니다."),
     LIKE_DENIED(FORBIDDEN, "본인이 쓴 글은 공감할 수 없습니다."),
+    WRITER_ONLY(FORBIDDEN, "본인이 쓴 글만 삭제할 수 있습니다."),
 
     /* 404 - 찾을 수 없는 리소스 */
     MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다."),
