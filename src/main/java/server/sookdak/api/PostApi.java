@@ -49,6 +49,13 @@ public class PostApi {
         return PostResponse.newResponse(POST_SAVE_SUCCESS);
     }
 
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<PostResponse> deletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
+
+        return PostResponse.newResponse(POST_DELETE_SUCCESS);
+    }
+
     @GetMapping("/{order}/{boardId}/{page}")
     public ResponseEntity<PostListResponse> postList(@PathVariable Long boardId, @PathVariable String order, @PathVariable int page) {
         PostListResponseDto responseDto = postService.getPostList(boardId, order, page);
