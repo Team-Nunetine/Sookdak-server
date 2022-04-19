@@ -52,6 +52,22 @@ public class PostService {
         postRepository.save(post);
     }
 
+
+    public void deletePost(Long postId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        if (post.getUser() != user) {
+            throw new CustomException(WRITER_ONLY);
+        } else {
+            postRepository.delete(post);
+        }
+    }
+
     public PostListResponseDto getPostList(Long boardId, String order, int page) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
