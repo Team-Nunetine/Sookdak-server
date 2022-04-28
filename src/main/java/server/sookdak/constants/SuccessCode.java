@@ -19,6 +19,7 @@ public enum SuccessCode {
     BOARD_DELETE_SUCCESS(OK, "게시판 삭제에 성공했습니다."),
 
     POST_SAVE_SUCCESS(OK, "게시글 저장에 성공했습니다."),
+    POST_DETAIL_READ_SUCCESS(OK, "게시글 상세 조회에 성공했습니다."),
     POST_LIST_READ_SUCCESS(OK, "게시글 목록 조회에 성공했습니다."),
     POST_DELETE_SUCCESS(OK, "게시글 삭제에 성공했습니다."),
 
