@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
 import server.sookdak.dto.req.PostSaveRequestDto;
+import server.sookdak.dto.res.PostDetailResponseDto;
+import server.sookdak.dto.res.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.PostListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
@@ -68,6 +70,24 @@ public class PostService {
         }
     }
 
+    public PostDetailResponseDto getPostDetail(Long postId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        List<String> images = new ArrayList<>();
+        for (PostImage image : post.getImages()) {
+            images.add(image.getUrl());
+        }
+
+        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), images, post.getUser().equals(user));
+
+        return PostDetailResponseDto.of(postDetail, null);
+    }
+
     public PostListResponseDto getPostList(Long boardId, String order, int page) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
@@ -117,23 +137,21 @@ public class PostService {
         }
     }
 
-    public boolean clickPostScrap(Long postId){
+    public boolean clickPostScrap(Long postId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
-        Optional<PostScrap> existPostScrap = postScrapRepository.findByUserAndPost(user,post);
-        if(existPostScrap.isPresent()){
+        Optional<PostScrap> existPostScrap = postScrapRepository.findByUserAndPost(user, post);
+        if (existPostScrap.isPresent()) {
             postScrapRepository.delete(existPostScrap.get());
             return false;
-        }else{
-            PostScrap postScrap = PostScrap.createPostScrap(user,post);
+        } else {
+            PostScrap postScrap = PostScrap.createPostScrap(user, post);
             postScrapRepository.save(postScrap);
             return true;
         }
-
-
     }
 }

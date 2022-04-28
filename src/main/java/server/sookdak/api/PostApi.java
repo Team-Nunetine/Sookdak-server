@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.dto.req.PostSaveRequestDto;
-import server.sookdak.dto.res.PostListResponse;
-import server.sookdak.dto.res.PostListResponseDto;
-import server.sookdak.dto.res.PostResponse;
+import server.sookdak.dto.res.*;
 import server.sookdak.service.PostService;
 import server.sookdak.util.S3Util;
 
@@ -54,6 +52,13 @@ public class PostApi {
         postService.deletePost(postId);
 
         return PostResponse.newResponse(POST_DELETE_SUCCESS);
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
+        PostDetailResponseDto responseDto = postService.getPostDetail(postId);
+
+        return PostDetailResponse.newResponse(POST_DETAIL_READ_SUCCESS, responseDto);
     }
 
     @GetMapping("/{order}/{boardId}/{page}")
