@@ -145,6 +145,11 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
         Optional<PostScrap> existPostScrap = postScrapRepository.findByUserAndPost(user, post);
+
+        if (post.getUser() == user) {
+            throw new CustomException(SCRAP_DENIED);
+        }
+
         if (existPostScrap.isPresent()) {
             postScrapRepository.delete(existPostScrap.get());
             return false;
