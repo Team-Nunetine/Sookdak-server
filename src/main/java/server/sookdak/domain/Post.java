@@ -49,4 +49,12 @@ public class Post {
         post.createdAt = createdAt;
         return post;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateImages(List<PostImage> images) {
+        this.images = images;
+    }
 }
