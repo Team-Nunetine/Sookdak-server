@@ -3,6 +3,7 @@ package server.sookdak.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import server.sookdak.dto.req.PostSaveRequestDto;
 import server.sookdak.dto.res.*;
 import server.sookdak.service.PostService;
@@ -47,6 +48,34 @@ public class PostApi {
         return PostResponse.newResponse(POST_SAVE_SUCCESS);
     }
 
+    @PostMapping("/{postId}")
+    public ResponseEntity<PostDetailResponse> editPost(@PathVariable Long postId,
+                                                       @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) {
+
+        List<String> imageURLs = new ArrayList<>();
+        if (postSaveRequestDto.getImages().size() > 0) {
+            for (MultipartFile image : postSaveRequestDto.getImages()) {
+                System.out.println(image);
+            }
+        }
+        if (postSaveRequestDto.getImages().size() > 0) {
+            imageURLs = postSaveRequestDto.getImages().stream()
+                    .map(image -> {
+                        try {
+                            return s3Util.postUpload(image);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e.toString());
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        postService.editPost(postSaveRequestDto, postId, imageURLs);
+        PostDetailResponseDto responseDto = postService.getPostDetail(postId);
+
+        return PostDetailResponse.newResponse(POST_EDIT_SUCCESS, responseDto);
+    }
+
     @DeleteMapping("/{postId}")
     public ResponseEntity<PostResponse> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
@@ -79,11 +108,11 @@ public class PostApi {
     }
 
     @PostMapping("/{postId}/scrap")
-    public ResponseEntity<PostResponse> postScrap(@PathVariable Long postId){
+    public ResponseEntity<PostResponse> postScrap(@PathVariable Long postId) {
         boolean response = postService.clickPostScrap(postId);
-        if(response) {
+        if (response) {
             return PostResponse.newResponse(SCRAP_SUCCESS);
-        } else{
+        } else {
             return PostResponse.newResponse(SCRAP_DELETE_SUCCESS);
         }
     }
