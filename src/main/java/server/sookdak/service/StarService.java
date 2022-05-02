@@ -13,7 +13,7 @@ import server.sookdak.dto.res.StarListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
 import server.sookdak.repository.PostRepository;
-import server.sookdak.repository.StarRepsository;
+import server.sookdak.repository.StarRepository;
 import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
 
@@ -30,7 +30,7 @@ import static server.sookdak.dto.res.StarListResponseDto.*;
 @RequiredArgsConstructor
 public class StarService {
 
-    private final StarRepsository starRepsository;
+    private final StarRepository starRepository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final PostRepository postRepository;
@@ -43,13 +43,13 @@ public class StarService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
 
-        Optional<Star> existStar = starRepsository.findByUserAndBoard(user, board);
+        Optional<Star> existStar = starRepository.findByUserAndBoard(user, board);
         if (existStar.isPresent()) {
-            starRepsository.delete(existStar.get());
+            starRepository.delete(existStar.get());
             return false;
         } else {
             Star star = Star.createStar(user, board);
-            starRepsository.save(star);
+            starRepository.save(star);
             return true;
         }
     }
@@ -59,7 +59,7 @@ public class StarService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-        List<StarList> stars = starRepsository.findAllByUserOrderByCreatedAtAsc(user).stream()
+        List<StarList> stars = starRepository.findAllByUserOrderByCreatedAtAsc(user).stream()
                 .map(StarList::new)
                 .collect(Collectors.toList());
 
@@ -73,7 +73,7 @@ public class StarService {
 
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<StarBoardList> starBoardLists = starRepsository.findAllByUserOrderByCreatedAtAsc(user).stream()
+        List<StarBoardList> starBoardLists = starRepository.findAllByUserOrderByCreatedAtAsc(user).stream()
                 .map(star -> new StarBoardList(star, postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(star.getBoard(), pageRequest)))
                 .collect(Collectors.toList());
 

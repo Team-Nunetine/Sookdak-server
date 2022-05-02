@@ -31,7 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostImageRepository postImageRepository;
-    private final StarRepsository starRepsository;
+    private final StarRepository starRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final PostScrapRepository postScrapRepository;
@@ -110,7 +110,7 @@ public class PostService {
             throw new CustomException(WRONG_TYPE_ORDER);
         }
 
-        boolean isStar = starRepsository.existsByUserAndBoard(user, board);
+        boolean isStar = starRepository.existsByUserAndBoard(user, board);
         return PostListResponseDto.of(isStar, posts);
     }
 
