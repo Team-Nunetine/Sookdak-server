@@ -34,6 +34,18 @@ public class BoardService {
         return BoardListResponseDto.of(boards);
     }
 
+    @Transactional(readOnly = true)
+    public BoardListResponseDto findByUser(){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        List<BoardList> boards = boardRepository.findByUser(user).stream()
+                .map(BoardList::new)
+                .collect(Collectors.toList());
+        return BoardListResponseDto.of(boards);
+    }
+
+
     public BoardResponseDto saveBoard(BoardSaveRequestDto boardSaveRequestDto) {
         // 현재 로그인한 유저 찾기
         String userEmail = SecurityUtil.getCurrentUserEmail();

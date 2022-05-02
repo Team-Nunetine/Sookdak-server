@@ -5,10 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.dto.TokenDto;
 import server.sookdak.dto.req.TokenRequestDto;
-import server.sookdak.dto.res.TokenResponse;
-import server.sookdak.dto.res.UserResponse;
-import server.sookdak.dto.res.UserResponseDto;
+import server.sookdak.dto.res.*;
 import server.sookdak.dto.req.UserRequestDto;
+import server.sookdak.service.BoardService;
 import server.sookdak.service.UserService;
 
 import javax.validation.Valid;
@@ -21,6 +20,7 @@ import static server.sookdak.constants.SuccessCode.*;
 public class UserApi {
 
     private final UserService userService;
+    private final BoardService boardService;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyMemberInfo() {
@@ -39,5 +39,12 @@ public class UserApi {
     public ResponseEntity<TokenResponse> reissue(@Valid @RequestBody TokenRequestDto tokenRequestDto) {
         TokenDto tokenDto = userService.reissue(tokenRequestDto);
         return TokenResponse.toResponse(REISSUE_SUCCESS, tokenDto);
+    }
+
+    @GetMapping("/myboard")
+    public ResponseEntity<BoardListResponse> findAll() {
+        BoardListResponseDto responseDto = boardService.findByUser();
+
+        return BoardListResponse.newResponse(BOARD_READ_SUCCESS, responseDto);
     }
 }
