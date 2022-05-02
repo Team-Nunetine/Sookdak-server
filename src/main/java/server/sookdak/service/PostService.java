@@ -111,8 +111,13 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
         if (post.getUser() != user) {
-            throw new CustomException(WRITER_ONLY);
+            throw new CustomException(WRITER_ONLY_DELETE);
         } else {
+            if (post.getImages().size() > 0) {
+                postImageRepository.findAllByPost(post)
+                        .forEach(postImage -> s3Util.delete(postImage.getUrl()));
+            }
+
             postRepository.delete(post);
         }
     }
