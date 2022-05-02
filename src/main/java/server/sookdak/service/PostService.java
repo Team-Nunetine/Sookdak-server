@@ -11,6 +11,7 @@ import server.sookdak.dto.res.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.PostListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
+import server.sookdak.util.S3Util;
 import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class PostService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final PostScrapRepository postScrapRepository;
+    private final S3Util s3Util;
 
     public void savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
@@ -52,6 +54,51 @@ public class PostService {
         }
 
         postRepository.save(post);
+    }
+
+    public void editPost(PostSaveRequestDto postSaveRequestDto, Long postId, List<String> imageURLs) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        if (post.getUser() != user) {
+            throw new CustomException(WRITER_ONLY_EDIT);
+        }
+
+        post.updateContent(postSaveRequestDto.getContent());
+
+        List<PostImage> postImages = new ArrayList<>();
+        //원래 이미지 있을 때
+        if (post.getImages().size() > 0) {
+            postImageRepository.findAllByPost(post)
+                    .forEach(postImage -> s3Util.delete(postImage.getUrl()));
+            postImageRepository.deleteAllByPost(post);
+            post.updateImages(postImages);
+
+            if (imageURLs.size() > 0) {
+                for (String imageURL : imageURLs) {
+                    PostImage postImage = PostImage.createPostImage(post, imageURL);
+                    postImageRepository.save(postImage);
+                    postImages.add(postImage);
+                }
+                post.updateImages(postImages);
+            }
+        }
+
+        //원래 이미지 없을 때
+        if (post.getImages().size() == 0) {
+            if (imageURLs.size() > 0) {
+                for (String imageURL : imageURLs) {
+                    PostImage postImage = PostImage.createPostImage(post, imageURL);
+                    postImageRepository.save(postImage);
+                    postImages.add(postImage);
+                }
+                post.updateImages(postImages);
+            }
+        }
     }
 
 
