@@ -42,6 +42,9 @@ public class Post {
     private List<PostLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<CommentIdentifier> identifiers = new ArrayList<>();
 
     public static Post createPost(User user, Board board, String content, String createdAt) {
