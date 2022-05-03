@@ -33,7 +33,9 @@ public enum SuccessCode {
     HOME_INFO_SUCCESS(OK, "홈 조회에 성공했습니다."),
 
     SCRAP_SUCCESS(OK, "게시글 스크랩에 성공했습니다."),
-    SCRAP_DELETE_SUCCESS(OK, "게시글 스크랩 취소에 성공했습니다.");
+    SCRAP_DELETE_SUCCESS(OK, "게시글 스크랩 취소에 성공했습니다."),
+
+    COMMENT_SAVE_SUCCESS(OK, "댓글 작성에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;
