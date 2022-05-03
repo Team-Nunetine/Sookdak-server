@@ -48,7 +48,7 @@ public class S3Util {
         return upload(file, "post");
     }
 
-    public String commentUpload(MultipartFile file, int num) throws IOException {
+    public String commentUpload(MultipartFile file) throws IOException {
         return upload(file, "comment");
     }
 
