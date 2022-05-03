@@ -34,8 +34,16 @@ public class CommentService {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
-        Comment comment = Comment.createComment(user, post, parent, commentSaveRequestDto.getContent(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
 
+        if (parent != 0) { //대댓글일 경우에
+            if (commentRepository.findById(parent).isEmpty()) { //부모댓글이 존재하지 않는다면
+                throw new CustomException(COMMENT_NOT_FOUND);
+            } else if (commentRepository.findById(parent).get().getParent() != 0) { //부모댓글의 부모가 0이 아니라면
+                throw new CustomException(RE_COMMENT_ONLY);
+            }
+        }
+
+        Comment comment = Comment.createComment(user, post, parent, commentSaveRequestDto.getContent(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
         if (commentSaveRequestDto.getImage() != null) {
             CommentImage commentImage = CommentImage.createCommentImage(comment, imageURL);
             commentImageRepository.save(commentImage);
@@ -52,6 +60,6 @@ public class CommentService {
             commentIdentifierRepository.save(commentIdentifier);
         }
 
-        return CommentResponseDto.of(commentIdentifier.getCommentOrder(),comment, imageURL);
+        return CommentResponseDto.of(commentIdentifier.getCommentOrder(), comment, imageURL);
     }
 }
