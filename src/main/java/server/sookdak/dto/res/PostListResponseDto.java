@@ -28,15 +28,8 @@ public class PostListResponseDto {
         private String content;
         private String createdAt;
         private int likes;
+        private int comments;
         private boolean image;
-
-        public PostList(Post entity, boolean image, int likes) {
-            this.postId = entity.getPostId();
-            this.content = entity.getContent();
-            this.createdAt = entity.getCreatedAt();
-            this.likes = likes;
-            this.image = image;
-        }
 
         public static PostList of(Post post) {
             PostList postList = new PostList();
@@ -44,6 +37,7 @@ public class PostListResponseDto {
             postList.content = post.getContent();
             postList.createdAt = post.getCreatedAt();
             postList.likes = post.getLikes().size();
+            postList.comments = post.getComments().size();
             if (post.getImages().size() > 0) {
                 postList.image = true;
             } else {

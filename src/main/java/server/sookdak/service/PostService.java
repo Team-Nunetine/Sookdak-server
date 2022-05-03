@@ -139,9 +139,9 @@ public class PostService {
             images.add(image.getUrl());
         }
 
-        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), images, post.getUser().equals(user));
+        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), post.getComments().size(), images, post.getUser().equals(user));
 
-        return PostDetailResponseDto.of(postDetail, null);
+        return PostDetailResponseDto.of(postDetail);
     }
 
     public PostListResponseDto getPostList(Long boardId, String order, int page) {
@@ -156,11 +156,11 @@ public class PostService {
         PageRequest pageRequest = PageRequest.of(page, 20);
         if (order.equals("latest")) {
             posts = postRepository.findAllByBoardOrderByCreatedAtDescPostIdDesc(board, pageRequest).stream()
-                    .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
+                    .map(PostList::of)
                     .collect(Collectors.toList());
         } else if (order.equals("popularity")) {
             posts = postRepository.findAllByBoardOrderByLikesDescCreatedAtDesc(board, pageRequest).stream()
-                    .map(post -> new PostList(post, post.getImages().size() != 0, post.getLikes().size()))
+                    .map(PostList::of)
                     .collect(Collectors.toList());
         } else {
             throw new CustomException(WRONG_TYPE_ORDER);
