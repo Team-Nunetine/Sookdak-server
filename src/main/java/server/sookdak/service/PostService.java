@@ -38,7 +38,7 @@ public class PostService {
     private final PostScrapRepository postScrapRepository;
     private final S3Util s3Util;
 
-    public void savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
+    public Long savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -48,12 +48,16 @@ public class PostService {
 
         Post post = Post.createPost(user, board, postSaveRequestDto.getContent(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
 
+        List<PostImage> postImages = new ArrayList<>();
         for (String imageURL : imageURLs) {
             PostImage postImage = PostImage.createPostImage(post, imageURL);
             postImageRepository.save(postImage);
+            postImages.add(postImage);
         }
+        post.updateImages(postImages);
 
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        return savedPost.getPostId();
     }
 
     public void editPost(PostSaveRequestDto postSaveRequestDto, Long postId, List<String> imageURLs) {
