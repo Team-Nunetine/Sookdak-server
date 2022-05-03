@@ -27,7 +27,7 @@ public class PostApi {
     private final S3Util s3Util;
 
     @PostMapping("/{boardId}/save")
-    public ResponseEntity<PostResponse> savePost(@PathVariable Long boardId,
+    public ResponseEntity<PostDetailResponse> savePost(@PathVariable Long boardId,
                                                  @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) throws IOException {
 
         List<String> imageURLs = new ArrayList<>();
@@ -43,9 +43,10 @@ public class PostApi {
                     .collect(Collectors.toList());
         }
 
-        postService.savePost(postSaveRequestDto, boardId, imageURLs);
+        Long postId = postService.savePost(postSaveRequestDto, boardId, imageURLs);
+        PostDetailResponseDto responseDto = postService.getPostDetail(postId);
 
-        return PostResponse.newResponse(POST_SAVE_SUCCESS);
+        return PostDetailResponse.newResponse(POST_SAVE_SUCCESS, responseDto);
     }
 
     @PostMapping("/{postId}")
