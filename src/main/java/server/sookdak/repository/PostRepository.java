@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import server.sookdak.domain.Board;
 import server.sookdak.domain.Post;
+import server.sookdak.domain.User;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p where p.board=?1 order by p.likes.size desc, p.createdAt desc, p.postId desc")
     List<Post> findAllByBoardOrderByLikesDescCreatedAtDesc(Board board, Pageable page);
+
+    List<Post> findAllByUserOrderByCreatedAtDescPostIdDesc(User user, Pageable page);
 }
