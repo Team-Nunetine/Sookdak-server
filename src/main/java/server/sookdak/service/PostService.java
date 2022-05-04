@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
 import server.sookdak.dto.req.PostSaveRequestDto;
+import server.sookdak.dto.res.MyPostListResponseDto;
 import server.sookdak.dto.res.PostDetailResponseDto;
 import server.sookdak.dto.res.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.PostListResponseDto;
@@ -214,5 +215,18 @@ public class PostService {
             postScrapRepository.save(postScrap);
             return true;
         }
+    }
+
+    public MyPostListResponseDto getMyPost(int page) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+        List<PostList> posts = postRepository.findAllByUserOrderByCreatedAtDescPostIdDesc(user, pageRequest).stream()
+                .map(PostList::of)
+                .collect(Collectors.toList());
+
+        return MyPostListResponseDto.of(posts);
     }
 }
