@@ -8,6 +8,7 @@ import server.sookdak.dto.req.TokenRequestDto;
 import server.sookdak.dto.res.*;
 import server.sookdak.dto.req.UserRequestDto;
 import server.sookdak.service.BoardService;
+import server.sookdak.service.PostService;
 import server.sookdak.service.UserService;
 
 import javax.validation.Valid;
@@ -21,6 +22,7 @@ public class UserApi {
 
     private final UserService userService;
     private final BoardService boardService;
+    private final PostService postService;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyMemberInfo() {
@@ -46,5 +48,12 @@ public class UserApi {
         BoardListResponseDto responseDto = boardService.findByUser();
 
         return BoardListResponse.newResponse(BOARD_READ_SUCCESS, responseDto);
+    }
+
+    @GetMapping("/mypost/{page}")
+    public ResponseEntity<MyPostListResponse> mypost(@PathVariable int page) {
+        MyPostListResponseDto responseDto = postService.getMyPost(page);
+
+        return MyPostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }
 }
