@@ -8,6 +8,7 @@ import server.sookdak.dto.req.CommentSaveRequestDto;
 import server.sookdak.dto.res.CommentResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
+import server.sookdak.util.S3Util;
 import server.sookdak.util.SecurityUtil;
 
 
@@ -26,6 +27,7 @@ public class CommentService {
     private final CommentImageRepository commentImageRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final S3Util s3Util;
 
     public CommentResponseDto saveComment(CommentSaveRequestDto commentSaveRequestDto, Long postId, Long parent, String imageURL) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
@@ -61,5 +63,26 @@ public class CommentService {
         }
 
         return CommentResponseDto.of(commentIdentifier.getCommentOrder(), comment, imageURL);
+    }
+
+    public void deleteComment(Long commentId){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CustomException(COMMENT_NOT_FOUND));
+
+        if(comment.getUser() != user) {
+            throw new CustomException(WRITER_ONLY_DELETE);
+        }else {
+            Optional<CommentImage> existCommentImage = commentImageRepository.findByComment(comment);
+            if (existCommentImage.isPresent()) {
+                CommentImage commentImage = existCommentImage.get();
+                s3Util.delete(commentImage.getUrl());
+                commentRepository.delete(comment);
+            } else {
+                commentRepository.delete(comment);
+            }
+        }
     }
 }
