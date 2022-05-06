@@ -1,4 +1,4 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.comment;
 
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;

@@ -1,12 +1,10 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.user;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import server.sookdak.constants.SuccessCode;
 import server.sookdak.dto.BaseResponse;
-import server.sookdak.dto.TokenDto;
 
 @Getter
 @NoArgsConstructor

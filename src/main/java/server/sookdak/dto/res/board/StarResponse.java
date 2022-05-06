@@ -1,4 +1,4 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.board;
 
 import org.springframework.http.ResponseEntity;
 import server.sookdak.constants.SuccessCode;

@@ -1,4 +1,4 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.user;
 
 import lombok.AccessLevel;
 import lombok.Getter;
