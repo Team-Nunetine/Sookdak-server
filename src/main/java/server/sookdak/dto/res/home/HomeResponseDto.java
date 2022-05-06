@@ -1,11 +1,10 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.home;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import server.sookdak.domain.Board;
 import server.sookdak.domain.Post;
 import server.sookdak.domain.Star;
-import server.sookdak.dto.res.PostListResponseDto.PostList;
+import server.sookdak.dto.res.post.PostListResponseDto.PostList;
 
 import java.util.ArrayList;
 import java.util.List;

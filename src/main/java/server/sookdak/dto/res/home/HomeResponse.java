@@ -1,4 +1,4 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.home;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

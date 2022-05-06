@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import server.sookdak.constants.SuccessCode;
-import server.sookdak.dto.res.HomeResponse;
-import server.sookdak.dto.res.HomeResponseDto;
+import server.sookdak.dto.res.home.HomeResponse;
+import server.sookdak.dto.res.home.HomeResponseDto;
 import server.sookdak.service.StarService;
 
 @RequiredArgsConstructor

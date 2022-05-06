@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.Board;
 import server.sookdak.domain.Star;
 import server.sookdak.domain.User;
-import server.sookdak.dto.res.HomeResponseDto;
-import server.sookdak.dto.res.HomeResponseDto.StarBoardList;
-import server.sookdak.dto.res.StarListResponseDto;
+import server.sookdak.dto.res.home.HomeResponseDto;
+import server.sookdak.dto.res.home.HomeResponseDto.StarBoardList;
+import server.sookdak.dto.res.board.StarListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.BoardRepository;
 import server.sookdak.repository.PostRepository;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static server.sookdak.constants.ExceptionCode.BOARD_NOT_FOUND;
 import static server.sookdak.constants.ExceptionCode.USER_NOT_FOUND;
-import static server.sookdak.dto.res.StarListResponseDto.*;
+import static server.sookdak.dto.res.board.StarListResponseDto.*;
 
 @Service
 @Transactional

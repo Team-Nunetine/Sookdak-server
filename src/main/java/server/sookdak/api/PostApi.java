@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import server.sookdak.dto.req.PostSaveRequestDto;
-import server.sookdak.dto.res.*;
+import server.sookdak.dto.res.post.*;
 import server.sookdak.service.PostService;
 import server.sookdak.util.S3Util;
 
@@ -28,7 +28,7 @@ public class PostApi {
 
     @PostMapping("/{boardId}/save")
     public ResponseEntity<PostDetailResponse> savePost(@PathVariable Long boardId,
-                                                 @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) throws IOException {
+                                                       @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) throws IOException {
 
         List<String> imageURLs = new ArrayList<>();
         if (postSaveRequestDto.getImages().size() > 0) {

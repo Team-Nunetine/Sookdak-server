@@ -1,4 +1,4 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.board;
 
 import lombok.Getter;
 import server.sookdak.domain.Board;

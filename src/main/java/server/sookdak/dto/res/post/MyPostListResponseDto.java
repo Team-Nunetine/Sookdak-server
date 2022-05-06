@@ -1,8 +1,8 @@
-package server.sookdak.dto.res;
+package server.sookdak.dto.res.post;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import server.sookdak.dto.res.PostListResponseDto.PostList;
+import server.sookdak.dto.res.post.PostListResponseDto.PostList;
 
 import java.util.List;
 

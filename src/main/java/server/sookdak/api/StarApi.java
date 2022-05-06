@@ -3,10 +3,9 @@ package server.sookdak.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.sookdak.constants.SuccessCode;
-import server.sookdak.dto.res.StarListResponse;
-import server.sookdak.dto.res.StarListResponseDto;
-import server.sookdak.dto.res.StarResponse;
+import server.sookdak.dto.res.board.StarListResponse;
+import server.sookdak.dto.res.board.StarListResponseDto;
+import server.sookdak.dto.res.board.StarResponse;
 import server.sookdak.service.StarService;
 
 import static server.sookdak.constants.SuccessCode.*;
