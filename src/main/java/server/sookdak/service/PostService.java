@@ -10,6 +10,7 @@ import server.sookdak.dto.res.post.MyPostListResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.post.PostListResponseDto;
+import server.sookdak.dto.res.post.ScrapListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
@@ -228,5 +229,19 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return MyPostListResponseDto.of(posts);
+    }
+
+    public ScrapListResponseDto getMyScrap(int page) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+        List<ScrapListResponseDto.ScrapList> scrapLists = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
+                .map(ScrapListResponseDto.ScrapList::new)
+                .collect(Collectors.toList());
+
+        return ScrapListResponseDto.of(scrapLists);
+
     }
 }
