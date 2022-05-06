@@ -66,8 +66,15 @@ public class BoardService {
     }
 
     public BoardResponseDto delete(Long BoardId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
         Board board = boardRepository.findById(BoardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
+        if(board.getUser() != user) {
+            throw new CustomException(CREATOR_ONLY_DELETE);
+        }
         boardRepository.delete(board);
         return BoardResponseDto.of(board);
     }
