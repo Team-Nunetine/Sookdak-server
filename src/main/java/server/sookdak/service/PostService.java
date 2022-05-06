@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
 import server.sookdak.dto.req.PostSaveRequestDto;
-import server.sookdak.dto.res.MyPostListResponseDto;
-import server.sookdak.dto.res.PostDetailResponseDto;
-import server.sookdak.dto.res.PostDetailResponseDto.PostDetail;
-import server.sookdak.dto.res.PostListResponseDto;
+import server.sookdak.dto.res.post.MyPostListResponseDto;
+import server.sookdak.dto.res.post.PostDetailResponseDto;
+import server.sookdak.dto.res.post.PostDetailResponseDto.PostDetail;
+import server.sookdak.dto.res.post.PostListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static server.sookdak.constants.ExceptionCode.*;
-import static server.sookdak.dto.res.PostListResponseDto.*;
+import static server.sookdak.dto.res.post.PostListResponseDto.*;
 
 @Service
 @Transactional

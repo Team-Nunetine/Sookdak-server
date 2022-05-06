@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.dto.req.CommentSaveRequestDto;
-import server.sookdak.dto.res.CommentResponse;
-import server.sookdak.dto.res.CommentResponseDto;
+import server.sookdak.dto.res.comment.CommentResponse;
+import server.sookdak.dto.res.comment.CommentResponseDto;
 import server.sookdak.service.CommentService;
 import server.sookdak.util.S3Util;
 
