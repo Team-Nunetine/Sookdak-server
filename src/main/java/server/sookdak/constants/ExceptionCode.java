@@ -28,6 +28,7 @@ public enum ExceptionCode {
     LIKE_DENIED(FORBIDDEN, "본인이 쓴 글은 공감할 수 없습니다."),
     WRITER_ONLY_EDIT(FORBIDDEN, "본인이 쓴 글만 수정할 수 있습니다."),
     WRITER_ONLY_DELETE(FORBIDDEN, "본인이 쓴 글만 삭제할 수 있습니다."),
+    CREATOR_ONLY_DELETE(FORBIDDEN, "본인이 만든 게시판만 삭제할 수 있습니다."),
     SCRAP_DENIED(FORBIDDEN, "본인이 쓴 글은 스크랩할 수 없습니다."),
     RE_COMMENT_ONLY(FORBIDDEN, "댓글은 답글까지만 달 수 있습니다."),
 
