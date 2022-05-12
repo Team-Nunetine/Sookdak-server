@@ -11,7 +11,14 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment,Long> {
 
-    @Query("select distinct c.post from Comment c where c.user=?1 order by c.createdAt desc") //댓글 단 글 중복 방지
+    @Query("select distinct c.post from Comment c where c.user=?1 order by c.createdAt desc")
     List<Post> findAllByUserOrderByCreatedAtDesc(User user, Pageable page);
+
+    @Query("select c from Comment c where c.post= ?1 and c.parent = 0")
+    List<Comment> findAllByPost(Post post);
+
+    @Query("select c from Comment c where c.parent = ?1")
+    List<Comment> findAllByParent(Long parent);
+
 }
 
