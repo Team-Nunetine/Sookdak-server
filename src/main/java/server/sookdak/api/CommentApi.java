@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.dto.req.CommentSaveRequestDto;
+import server.sookdak.dto.res.comment.CommentListResponse;
+import server.sookdak.dto.res.comment.CommentListResponseDto;
 import server.sookdak.dto.res.comment.CommentResponse;
 import server.sookdak.dto.res.comment.CommentResponseDto;
 import server.sookdak.service.CommentService;
@@ -29,7 +31,7 @@ public class CommentApi {
         if (commentSaveRequestDto.getImage() != null) {
             imageURL = s3Util.commentUpload(commentSaveRequestDto.getImage());
         }
-        CommentResponseDto responseDto = commentService.saveComment(commentSaveRequestDto, postId, parent,imageURL);
+        CommentResponseDto responseDto = commentService.saveComment(commentSaveRequestDto, postId, parent, imageURL);
         return CommentResponse.newResponse(COMMENT_SAVE_SUCCESS, responseDto);
     }
 
@@ -39,4 +41,12 @@ public class CommentApi {
 
         return CommentResponse.newDeleteResponse(COMMENT_DELETE_SUCCESS);
     }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<CommentListResponse> getCommentDetail(@PathVariable Long postId) {
+        CommentListResponseDto responseDto = commentService.findAll(postId);
+
+        return CommentListResponse.newResponse(COMMENT_LIST_READ_SUCCESS, responseDto);
+    }
+
 }
