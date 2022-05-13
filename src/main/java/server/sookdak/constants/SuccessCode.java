@@ -36,7 +36,8 @@ public enum SuccessCode {
     SCRAP_DELETE_SUCCESS(OK, "게시글 스크랩 취소에 성공했습니다."),
 
     COMMENT_SAVE_SUCCESS(OK, "댓글 작성에 성공했습니다."),
-    COMMENT_DELETE_SUCCESS(OK, "댓글 삭제에 성공했습니다.");
+    COMMENT_DELETE_SUCCESS(OK, "댓글 삭제에 성공했습니다."),
+    COMMENT_LIST_READ_SUCCESS(OK, "댓글 목록 조회에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;
