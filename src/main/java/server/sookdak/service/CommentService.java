@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
 import server.sookdak.dto.req.CommentSaveRequestDto;
+import server.sookdak.dto.res.comment.CommentListResponseDto;
 import server.sookdak.dto.res.comment.CommentResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
@@ -14,9 +15,12 @@ import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static server.sookdak.constants.ExceptionCode.*;
+import static server.sookdak.dto.res.comment.CommentListResponseDto.*;
 
 @Service
 @Transactional
@@ -84,5 +88,19 @@ public class CommentService {
                 commentRepository.delete(comment);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public CommentListResponseDto findAll(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        List<CommentList> comments = commentRepository.findAllByPost(post).stream()
+                .map(comment -> CommentList.of(comment,
+                                commentIdentifierRepository.getCommentOrder(comment.getUser(), comment.getPost()),
+                                commentRepository.findAllByParent(comment.getCommentId()).stream()
+                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost())))
+                                        .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        return CommentListResponseDto.of(comments);
     }
 }

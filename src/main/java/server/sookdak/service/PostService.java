@@ -10,7 +10,6 @@ import server.sookdak.dto.res.post.MyPostListResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.post.PostListResponseDto;
-import server.sookdak.dto.res.post.ScrapListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
@@ -38,6 +37,7 @@ public class PostService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final PostScrapRepository postScrapRepository;
+    private final CommentRepository commentRepository;
     private final S3Util s3Util;
 
     public Long savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
@@ -231,17 +231,30 @@ public class PostService {
         return MyPostListResponseDto.of(posts);
     }
 
-    public ScrapListResponseDto getMyScrap(int page) {
+    public MyPostListResponseDto getMyScrap(int page) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         PageRequest pageRequest = PageRequest.of(page, 20);
-        List<ScrapListResponseDto.ScrapList> scrapLists = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
-                .map(ScrapListResponseDto.ScrapList::new)
+        List<PostList> scrapList = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
+                .map(postScrap -> PostList.of(postScrap.getPost()))
                 .collect(Collectors.toList());
 
-        return ScrapListResponseDto.of(scrapLists);
+        return MyPostListResponseDto.of(scrapList);
 
+    }
+
+    public MyPostListResponseDto getMyComment(int page){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+        List<PostList> commentList = commentRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
+                .map(PostList::of)
+                .collect(Collectors.toList());
+
+        return MyPostListResponseDto.of(commentList);
     }
 }

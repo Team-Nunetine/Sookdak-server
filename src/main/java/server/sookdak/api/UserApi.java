@@ -63,9 +63,16 @@ public class UserApi {
     }
 
     @GetMapping("/myscrap/{page}")
-    public ResponseEntity<ScrapListResponse> myscrap(@PathVariable int page) {
-        ScrapListResponseDto responseDto = postService.getMyScrap(page);
+    public ResponseEntity<MyPostListResponse> myscrap(@PathVariable int page) {
+        MyPostListResponseDto responseDto = postService.getMyScrap(page);
 
-        return ScrapListResponse.newResponse(POST_LIST_READ_SUCCESS,responseDto);
+        return MyPostListResponse.newResponse(POST_LIST_READ_SUCCESS,responseDto);
+    }
+
+    @GetMapping("/mycomment/{page}")
+    public ResponseEntity<MyPostListResponse> mycomment(@PathVariable int page) {
+        MyPostListResponseDto responseDto = postService.getMyComment(page);
+
+        return MyPostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }
 }

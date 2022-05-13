@@ -6,7 +6,7 @@ import server.sookdak.domain.Comment;
 @Getter
 public class CommentResponseDto {
     private int commentOrder;
-    private Long comment_id;
+    private Long commentId;
     private Long parent;
     private String content;
     private String imageURL;
@@ -15,7 +15,7 @@ public class CommentResponseDto {
 
     private CommentResponseDto(int commentOrder, Comment entity, String imageURL) {
         this.commentOrder = commentOrder;
-        this.comment_id = entity.getCommentId();
+        this.commentId = entity.getCommentId();
         this.parent = entity.getParent();
         this.content = entity.getContent();
         this.imageURL = imageURL;
