@@ -28,8 +28,11 @@ public class CommentListResponseDto {
         private Long parent;
         private String content;
         private String imageURL;
+        private int likes;
         private String createdAt;
         private List<CommentList> reply;
+
+
 
 
         public static CommentList of(Comment comment, int commentOrder, List<CommentList> reply) {
@@ -43,7 +46,9 @@ public class CommentListResponseDto {
                 commentList.imageURL = comment.getImage().getUrl();
             }
             commentList.createdAt = comment.getCreatedAt();
+            commentList.likes = comment.getLikes().size();
             commentList.reply = reply;
+
 
             return commentList;
         }
@@ -59,6 +64,7 @@ public class CommentListResponseDto {
                 commentList.imageURL = comment.getImage().getUrl();
             }
             commentList.createdAt = comment.getCreatedAt();
+            commentList.likes = comment.getLikes().size();
 
             return commentList;
         }
