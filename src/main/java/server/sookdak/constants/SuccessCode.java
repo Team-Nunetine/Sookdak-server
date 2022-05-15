@@ -27,8 +27,8 @@ public enum SuccessCode {
     STAR_SUCCESS(OK, "게시판 즐겨찾기에 성공했습니다."),
     STAR_CANCEL_SUCCESS(OK, "게시판 즐겨찾기 취소에 성공했습니다."),
     STAR_INFO_SUCCESS(OK, "게시판 즐겨찾기 조회에 성공했습니다."),
-    LIKE_SUCCESS(OK, "게시글 공감에 성공했습니다."),
-    LIKE_CANCEL_SUCCESS(OK, "게시글 공감 취소에 성공했습니다."),
+    LIKE_SUCCESS(OK, "공감에 성공했습니다."),
+    LIKE_CANCEL_SUCCESS(OK, "공감 취소에 성공했습니다."),
 
     HOME_INFO_SUCCESS(OK, "홈 조회에 성공했습니다."),
 
