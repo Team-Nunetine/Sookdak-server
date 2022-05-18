@@ -30,6 +30,7 @@ public enum ExceptionCode {
     WRITER_ONLY_DELETE(FORBIDDEN, "본인이 쓴 글만 삭제할 수 있습니다."),
     CREATOR_ONLY_DELETE(FORBIDDEN, "본인이 만든 게시판만 삭제할 수 있습니다."),
     SCRAP_DENIED(FORBIDDEN, "본인이 쓴 글은 스크랩할 수 없습니다."),
+    WARN_DENIED(FORBIDDEN, "본인이 쓴 글은 신고할 수 없습니다."),
     RE_COMMENT_ONLY(FORBIDDEN, "댓글은 답글까지만 달 수 있습니다."),
 
     /* 404 - 찾을 수 없는 리소스 */
@@ -39,11 +40,8 @@ public enum ExceptionCode {
     COMMENT_NOT_FOUND(FORBIDDEN, "댓글을 찾을 수 없습니다."),
 
     /* 409 - 중복된 리소스 */
-    DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다.");
-
-
-
-
+    DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다."),
+    ALREADY_WARN(CONFLICT, "이미 신고한 게시글입니다.");
 
     private final HttpStatus status;
     private final String message;
