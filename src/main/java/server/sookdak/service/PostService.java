@@ -257,7 +257,6 @@ public class PostService {
         postWarnRepository.save(postWarn);
 
         int count = postWarnRepository.countByPost(post);
-        System.out.println(count);
         if (count == 5) {
             postRepository.deletePost(post.getPostId());
         }
