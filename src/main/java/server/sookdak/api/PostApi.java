@@ -118,4 +118,11 @@ public class PostApi {
         }
     }
 
+    @PostMapping("/{postId}/warn")
+    public ResponseEntity<PostResponse> postWarn(@PathVariable Long postId) {
+        postService.postWarn(postId);
+
+        return PostResponse.newResponse(POST_WARN_SUCCESS);
+    }
+
 }
