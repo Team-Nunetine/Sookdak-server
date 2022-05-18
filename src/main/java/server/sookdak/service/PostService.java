@@ -33,6 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostImageRepository postImageRepository;
+    private final PostWarnRepository postWarnRepository;
     private final StarRepository starRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
@@ -41,9 +42,7 @@ public class PostService {
     private final S3Util s3Util;
 
     public Long savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
@@ -63,9 +62,7 @@ public class PostService {
     }
 
     public void editPost(PostSaveRequestDto postSaveRequestDto, Long postId, List<String> imageURLs) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -109,9 +106,7 @@ public class PostService {
 
 
     public void deletePost(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -129,9 +124,7 @@ public class PostService {
     }
 
     public PostDetailResponseDto getPostDetail(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -147,9 +140,7 @@ public class PostService {
     }
 
     public PostListResponseDto getPostList(Long boardId, String order, int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
@@ -173,9 +164,7 @@ public class PostService {
     }
 
     public boolean clickPostLike(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -196,9 +185,7 @@ public class PostService {
     }
 
     public boolean clickPostScrap(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -219,9 +206,7 @@ public class PostService {
     }
 
     public MyPostListResponseDto getMyPost(int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
         List<PostList> posts = postRepository.findAllByUserOrderByCreatedAtDescPostIdDesc(user, pageRequest).stream()
@@ -232,9 +217,7 @@ public class PostService {
     }
 
     public MyPostListResponseDto getMyScrap(int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
         List<PostList> scrapList = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
@@ -245,10 +228,8 @@ public class PostService {
 
     }
 
-    public MyPostListResponseDto getMyComment(int page){
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+    public MyPostListResponseDto getMyComment(int page) {
+        User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
         List<PostList> commentList = commentRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
@@ -256,5 +237,34 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return MyPostListResponseDto.of(commentList);
+    }
+
+    public void postWarn(Long postId) {
+        User user = getUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        if (post.getUser() == user) {
+            throw new CustomException(WARN_DENIED);
+        }
+
+        Optional<PostWarn> existPostWarn = postWarnRepository.findByUserAndPost(user, post);
+        if (existPostWarn.isPresent()) {
+            throw new CustomException(ALREADY_WARN);
+        }
+        PostWarn postWarn = PostWarn.createPostWarn(user, post);
+        postWarnRepository.save(postWarn);
+
+        int count = postWarnRepository.countByPost(post);
+        if (count == 5) {
+            postRepository.deletePost(post.getPostId());
+        }
+    }
+
+    private User getUser() {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 }
