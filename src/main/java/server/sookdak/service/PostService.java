@@ -134,7 +134,11 @@ public class PostService {
             images.add(image.getUrl());
         }
 
-        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), post.getComments().size(), images, post.getUser().equals(user));
+        boolean userLiked = postLikeRepository.existsByUserAndPost(user, post);
+
+        boolean userScrapped = postScrapRepository.existsByUserAndPost(user, post);
+
+        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), post.getComments().size(), images, post.getUser().equals(user), userLiked, userScrapped);
 
         return PostDetailResponseDto.of(postDetail);
     }

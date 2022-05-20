@@ -16,4 +16,6 @@ public interface PostScrapRepository extends JpaRepository<PostScrap, UserPostId
     int countByPost(Post post);
 
     List<PostScrap> findAllByUserOrderByCreatedAtDesc(User user, Pageable page);
+
+    boolean existsByUserAndPost(User user, Post post);
 }
