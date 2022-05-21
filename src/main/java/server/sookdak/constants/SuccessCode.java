@@ -41,7 +41,9 @@ public enum SuccessCode {
 
     LECTURE_READ_SUCCESS(OK, "강의 조회에 성공했습니다."),
 
-    COMMENT_LIST_READ_SUCCESS(OK, "댓글 목록 조회에 성공했습니다.");
+    COMMENT_LIST_READ_SUCCESS(OK, "댓글 목록 조회에 성공했습니다."),
+    CHATROOM_READ_SUCCESS(OK,"채팅방 목록 조회에 성공했습니다."),
+    CHATROOM_CREATE_SUCCESS(OK,"채팅방 생성에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;
