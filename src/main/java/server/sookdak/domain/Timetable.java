@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -24,11 +25,25 @@ public class Timetable {
     @MapsId("lectureId")
     private Lecture lecture;
 
-    public static Timetable createTimetable(User user, Lecture lecture) {
+    @Enumerated(EnumType.STRING)
+    private Day day1;
+
+    @Enumerated(EnumType.STRING)
+    private Day day2;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
+
+    public static Timetable createTimetable(User user, Lecture lecture, Day day1, Day day2, LocalTime startTime, LocalTime endTime) {
         Timetable timetable = new Timetable();
         timetable.lectureId = new LectureId(user.getUserId(), lecture.getLectureId());
         timetable.user = user;
         timetable.lecture = lecture;
+        timetable.day1 = day1;
+        timetable.day2 = day2;
+        timetable.startTime = startTime;
+        timetable.endTime = endTime;
         return timetable;
     }
 }
