@@ -42,7 +42,8 @@ public enum ExceptionCode {
 
     /* 409 - 중복된 리소스 */
     DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다."),
-    ALREADY_WARN(CONFLICT, "이미 신고한 게시글입니다.");
+    ALREADY_WARN(CONFLICT, "이미 신고한 게시글입니다."),
+    DUPLICATE_LECTURE_DATETIME(CONFLICT, "이미 해당 시간에 추가된 강의가 있습니다.");
 
     private final HttpStatus status;
     private final String message;
