@@ -7,10 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.constants.SuccessCode;
-import server.sookdak.domain.Lecture;
-import server.sookdak.domain.LectureId;
-import server.sookdak.domain.Timetable;
-import server.sookdak.domain.User;
+import server.sookdak.domain.*;
 import server.sookdak.dto.res.lecture.LectureResponseDto;
 import server.sookdak.dto.res.lecture.LectureResponseDto.LectureList;
 import server.sookdak.exception.CustomException;
@@ -20,12 +17,12 @@ import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
 import server.sookdak.util.WebDriverUtil;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static server.sookdak.constants.ExceptionCode.LECTURE_NOT_FOUND;
-import static server.sookdak.constants.ExceptionCode.USER_NOT_FOUND;
+import static server.sookdak.constants.ExceptionCode.*;
 import static server.sookdak.constants.SuccessCode.TIMETABLE_ADD_SUCCESS;
 import static server.sookdak.constants.SuccessCode.TIMETABLE_DELETE_SUCCESS;
 
@@ -61,7 +58,36 @@ public class LectureService {
 
         Optional<Timetable> existTimetable = timetableRepository.findById(new LectureId(user.getUserId(), lecture.getLectureId()));
         if (existTimetable.isEmpty()) {
-            Timetable timetable = Timetable.createTimetable(user, lecture);
+            // 요일, 시간 파싱해서 저장
+            String datetime = lecture.getDatetime();
+            Day day1 = null, day2 = null;
+            LocalTime startTime = null, endTime = null;
+
+            int i = 0;
+            if (!datetime.equals("")) {
+                while (true) {
+                    char c = datetime.charAt(i);
+                    if (Character.isDigit(c)) {
+                        break;
+                    }
+                    if (i == 0) {
+                        day1 = Day.nameOf(Character.toString(c));
+                    }
+                    if (i == 1) {
+                        day2 = Day.nameOf(Character.toString(c));
+                    }
+                    i++;
+                }
+                startTime = LocalTime.of(Integer.parseInt(datetime.substring(i, i + 2)), Integer.parseInt(datetime.substring(i + 3, i + 5)));
+                endTime = LocalTime.of(Integer.parseInt(datetime.substring(i + 6, i + 8)), Integer.parseInt(datetime.substring(i + 9, i + 11)));
+
+                // 추가된 강의 중 겹치는 시간 찾기
+                List<Timetable> timetables = timetableRepository.getTimetableWithDatetime(day1, day2, startTime, endTime);
+                if (timetables.size() > 0) {
+                    throw new CustomException(DUPLICATE_LECTURE_DATETIME);
+                }
+            }
+            Timetable timetable = Timetable.createTimetable(user, lecture, day1, day2, startTime, endTime);
             timetableRepository.save(timetable);
             return TIMETABLE_ADD_SUCCESS;
         }
