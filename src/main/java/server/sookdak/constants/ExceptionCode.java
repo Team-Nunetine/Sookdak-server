@@ -37,11 +37,13 @@ public enum ExceptionCode {
     MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다."),
     BOARD_NOT_FOUND(NOT_FOUND, "게시판을 찾을 수 없습니다."),
     POST_NOT_FOUND(NOT_FOUND, "게시글을 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND(FORBIDDEN, "댓글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    LECTURE_NOT_FOUND(NOT_FOUND, "강의를 찾을 수 없습니다."),
 
     /* 409 - 중복된 리소스 */
     DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다."),
-    ALREADY_WARN(CONFLICT, "이미 신고한 게시글입니다.");
+    ALREADY_WARN(CONFLICT, "이미 신고한 게시글입니다."),
+    DUPLICATE_LECTURE_DATETIME(CONFLICT, "이미 해당 시간에 추가된 강의가 있습니다.");
 
     private final HttpStatus status;
     private final String message;
