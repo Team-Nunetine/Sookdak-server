@@ -82,7 +82,7 @@ public class LectureService {
                 endTime = LocalTime.of(Integer.parseInt(datetime.substring(i + 6, i + 8)), Integer.parseInt(datetime.substring(i + 9, i + 11)));
 
                 // 추가된 강의 중 겹치는 시간 찾기
-                List<Timetable> timetables = timetableRepository.getTimetableWithDatetime(day1, day2, startTime, endTime);
+                List<Timetable> timetables = timetableRepository.getTimetableWithDatetime(day1, day2, startTime, endTime, user);
                 if (timetables.size() > 0) {
                     throw new CustomException(DUPLICATE_LECTURE_DATETIME);
                 }
