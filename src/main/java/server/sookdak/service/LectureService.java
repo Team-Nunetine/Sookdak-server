@@ -10,6 +10,8 @@ import server.sookdak.constants.SuccessCode;
 import server.sookdak.domain.*;
 import server.sookdak.dto.res.lecture.LectureResponseDto;
 import server.sookdak.dto.res.lecture.LectureResponseDto.LectureList;
+import server.sookdak.dto.res.lecture.UserTimetableResponseDto;
+import server.sookdak.dto.res.lecture.UserTimetableResponseDto.UserTimetable;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.LectureRepository;
 import server.sookdak.repository.TimetableRepository;
@@ -93,6 +95,18 @@ public class LectureService {
         }
         existTimetable.ifPresent(timetableRepository::delete);
         return TIMETABLE_DELETE_SUCCESS;
+    }
+
+    public UserTimetableResponseDto getTimetable() {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        List<UserTimetable> userTimetable = timetableRepository.findAllByUser(user).stream()
+                .map(UserTimetable::of)
+                .collect(Collectors.toList());
+
+        return UserTimetableResponseDto.of(userTimetable);
     }
 
     public void crawling() throws InterruptedException {
