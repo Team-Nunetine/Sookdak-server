@@ -11,7 +11,7 @@ import java.util.List;
 public class LectureResponseDto {
     private List<LectureList> lectures;
 
-    public LectureResponseDto(List<LectureList> lectures) {
+    private LectureResponseDto(List<LectureList> lectures) {
         this.lectures = lectures;
     }
 

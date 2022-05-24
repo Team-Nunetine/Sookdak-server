@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.constants.SuccessCode;
-import server.sookdak.dto.res.lecture.LectureResponse;
-import server.sookdak.dto.res.lecture.LectureResponseDto;
-import server.sookdak.dto.res.lecture.TimetableResponse;
+import server.sookdak.dto.res.lecture.*;
 import server.sookdak.service.LectureService;
 
 import static server.sookdak.constants.SuccessCode.*;
@@ -31,6 +29,13 @@ public class LectureApi {
         SuccessCode successCode = lectureService.addTimetable(lectureId);
 
         return TimetableResponse.newResponse(successCode);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<UserTimetableResponse> getTimetable() {
+        UserTimetableResponseDto response = lectureService.getTimetable();
+
+        return UserTimetableResponse.newResponse(TIMETABLE_READ_SUCCESS, response);
     }
 
     @PostMapping("/crawl")
