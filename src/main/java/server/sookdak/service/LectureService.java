@@ -50,6 +50,17 @@ public class LectureService {
         return LectureResponseDto.of(lectures);
     }
 
+    public LectureResponseDto searchLecture(String word, int page) {
+        word = word.replaceAll(" ", "");
+        PageRequest pageRequest = PageRequest.of(page, 50);
+
+        List<LectureList> lectures = lectureRepository.searchLecture(word, pageRequest).stream()
+                .map(LectureList::of)
+                .collect(Collectors.toList());
+
+        return LectureResponseDto.of(lectures);
+    }
+
     public SuccessCode addTimetable(Long lectureId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
