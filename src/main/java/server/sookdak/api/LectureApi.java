@@ -8,6 +8,8 @@ import server.sookdak.constants.SuccessCode;
 import server.sookdak.dto.res.lecture.*;
 import server.sookdak.service.LectureService;
 
+import java.util.Map;
+
 import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
@@ -22,6 +24,13 @@ public class LectureApi {
         LectureResponseDto response = lectureService.getLectures(page);
 
         return LectureResponse.newResponse(LECTURE_READ_SUCCESS, response);
+    }
+
+    @GetMapping("/search/{page}")
+    public ResponseEntity<LectureResponse> searchLecture(@RequestBody Map<String, String> word, @PathVariable int page) {
+        LectureResponseDto response = lectureService.searchLecture(word.get("word"), page);
+
+        return LectureResponse.newResponse(LECTURE_SEARCH_SUCCESS, response);
     }
 
     @PostMapping("/{lectureId}")
