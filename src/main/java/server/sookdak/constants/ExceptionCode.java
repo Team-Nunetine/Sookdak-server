@@ -41,7 +41,7 @@ public enum ExceptionCode {
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
     LECTURE_NOT_FOUND(NOT_FOUND, "강의를 찾을 수 없습니다."),
     MESSAGE_ROOM_NOT_FOUND(NOT_FOUND, "쪽지함을 찾을 수 없습니다."),
-    CHAT_ROOM_NOT_FOUND(NOT_FOUND, "채팅방을 찾을 수 없습니다."),
+    ROOM_NOT_FOUND(NOT_FOUND, "채팅방을 찾을 수 없습니다."),
 
     /* 409 - 중복된 리소스 */
     DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다."),
