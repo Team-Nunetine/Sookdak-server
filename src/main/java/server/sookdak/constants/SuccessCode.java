@@ -40,9 +40,13 @@ public enum SuccessCode {
     COMMENT_DELETE_SUCCESS(OK, "댓글 삭제에 성공했습니다."),
 
     LECTURE_READ_SUCCESS(OK, "강의 조회에 성공했습니다."),
+    LECTURE_SEARCH_SUCCESS(OK, "강의 검색에 성공했습니다."),
     TIMETABLE_ADD_SUCCESS(OK, "시간표 추가에 성공했습니다."),
     TIMETABLE_DELETE_SUCCESS(OK, "시간표 삭제에 성공했습니다."),
     TIMETABLE_READ_SUCCESS(OK, "시간표 조회에 성공했습니다."),
+
+    MESSAGE_SEND_SUCCESS(OK, "쪽지 작성에 성공했습니다."),
+    MESSAGE_REPLY_SUCCESS(OK, "쪽지 답장에 성공했습니다."),
 
     COMMENT_LIST_READ_SUCCESS(OK, "댓글 목록 조회에 성공했습니다."),
     CHATROOM_READ_SUCCESS(OK,"채팅방 목록 조회에 성공했습니다."),
