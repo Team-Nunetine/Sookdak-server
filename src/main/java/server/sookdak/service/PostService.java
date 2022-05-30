@@ -10,7 +10,6 @@ import server.sookdak.dto.res.post.MyPostListResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.post.PostListResponseDto;
-import server.sookdak.dto.res.post.ScrapListResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
@@ -34,16 +33,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostImageRepository postImageRepository;
+    private final PostWarnRepository postWarnRepository;
     private final StarRepository starRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final PostScrapRepository postScrapRepository;
+    private final CommentRepository commentRepository;
     private final S3Util s3Util;
 
     public Long savePost(PostSaveRequestDto postSaveRequestDto, Long boardId, List<String> imageURLs) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
@@ -63,9 +62,7 @@ public class PostService {
     }
 
     public void editPost(PostSaveRequestDto postSaveRequestDto, Long postId, List<String> imageURLs) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -109,9 +106,7 @@ public class PostService {
 
 
     public void deletePost(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -129,9 +124,7 @@ public class PostService {
     }
 
     public PostDetailResponseDto getPostDetail(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -141,15 +134,17 @@ public class PostService {
             images.add(image.getUrl());
         }
 
-        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), post.getComments().size(), images, post.getUser().equals(user));
+        boolean userLiked = postLikeRepository.existsByUserAndPost(user, post);
+
+        boolean userScrapped = postScrapRepository.existsByUserAndPost(user, post);
+
+        PostDetail postDetail = new PostDetail(post.getContent(), post.getCreatedAt(), post.getLikes().size(), postScrapRepository.countByPost(post), post.getComments().size(), images, post.getUser().equals(user), userLiked, userScrapped);
 
         return PostDetailResponseDto.of(postDetail);
     }
 
     public PostListResponseDto getPostList(Long boardId, String order, int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
@@ -173,9 +168,7 @@ public class PostService {
     }
 
     public boolean clickPostLike(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -196,9 +189,7 @@ public class PostService {
     }
 
     public boolean clickPostScrap(Long postId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -219,9 +210,7 @@ public class PostService {
     }
 
     public MyPostListResponseDto getMyPost(int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
         List<PostList> posts = postRepository.findAllByUserOrderByCreatedAtDescPostIdDesc(user, pageRequest).stream()
@@ -231,17 +220,55 @@ public class PostService {
         return MyPostListResponseDto.of(posts);
     }
 
-    public ScrapListResponseDto getMyScrap(int page) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+    public MyPostListResponseDto getMyScrap(int page) {
+        User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
-        List<ScrapListResponseDto.ScrapList> scrapLists = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
-                .map(ScrapListResponseDto.ScrapList::new)
+        List<PostList> scrapList = postScrapRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
+                .map(postScrap -> PostList.of(postScrap.getPost()))
                 .collect(Collectors.toList());
 
-        return ScrapListResponseDto.of(scrapLists);
+        return MyPostListResponseDto.of(scrapList);
 
+    }
+
+    public MyPostListResponseDto getMyComment(int page) {
+        User user = getUser();
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+        List<PostList> commentList = commentRepository.findAllByUserOrderByCreatedAtDesc(user, pageRequest).stream()
+                .map(PostList::of)
+                .collect(Collectors.toList());
+
+        return MyPostListResponseDto.of(commentList);
+    }
+
+    public void postWarn(Long postId) {
+        User user = getUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        if (post.getUser() == user) {
+            throw new CustomException(WARN_DENIED);
+        }
+
+        Optional<PostWarn> existPostWarn = postWarnRepository.findByUserAndPost(user, post);
+        if (existPostWarn.isPresent()) {
+            throw new CustomException(ALREADY_WARN);
+        }
+        PostWarn postWarn = PostWarn.createPostWarn(user, post);
+        postWarnRepository.save(postWarn);
+
+        int count = postWarnRepository.countByPost(post);
+        if (count == 5) {
+            postRepository.deletePost(post.getPostId());
+        }
+    }
+
+    private User getUser() {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 }

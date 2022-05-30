@@ -7,6 +7,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -37,6 +39,9 @@ public class Comment {
 
     @OneToOne(mappedBy = "comment", cascade = CascadeType.ALL)
     private CommentImage image;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentLike> likes = new ArrayList<>();
 
     public static Comment createComment(User user, Post post, Long parent, String content, String createdAt){
         Comment comment = new Comment();

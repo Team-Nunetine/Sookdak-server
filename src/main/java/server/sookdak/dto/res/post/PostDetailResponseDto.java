@@ -28,8 +28,10 @@ public class PostDetailResponseDto {
         private int comments;
         private List<String> images;
         private boolean writer;
+        private boolean userLiked;
+        private boolean userScrapped;
 
-        public PostDetail(String content, String createdAt, int likes, int scraps, int comments, List<String> images, boolean writer) {
+        public PostDetail(String content, String createdAt, int likes, int scraps, int comments, List<String> images, boolean writer, boolean userLiked, boolean userScrapped) {
             this.content = content;
             this.createdAt = createdAt;
             this.likes = likes;
@@ -37,6 +39,8 @@ public class PostDetailResponseDto {
             this.comments = comments;
             this.images = images;
             this.writer = writer;
+            this.userLiked = userLiked;
+            this.userScrapped = userScrapped;
         }
     }
 }

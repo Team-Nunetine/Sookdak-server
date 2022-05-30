@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.*;
 import server.sookdak.dto.req.CommentSaveRequestDto;
-import server.sookdak.dto.res.comment.CommentResponseDto;
+import server.sookdak.dto.res.comment.CommentListResponseDto;
+import server.sookdak.dto.res.comment.CommentDetailResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
@@ -14,9 +15,12 @@ import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static server.sookdak.constants.ExceptionCode.*;
+import static server.sookdak.dto.res.comment.CommentListResponseDto.*;
 
 @Service
 @Transactional
@@ -27,9 +31,10 @@ public class CommentService {
     private final CommentImageRepository commentImageRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final S3Util s3Util;
 
-    public CommentResponseDto saveComment(CommentSaveRequestDto commentSaveRequestDto, Long postId, Long parent, String imageURL) {
+    public CommentDetailResponseDto saveComment(CommentSaveRequestDto commentSaveRequestDto, Long postId, Long parent, String imageURL) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -62,7 +67,7 @@ public class CommentService {
             commentIdentifierRepository.save(commentIdentifier);
         }
 
-        return CommentResponseDto.of(commentIdentifier.getCommentOrder(), comment, imageURL);
+        return CommentDetailResponseDto.of(commentIdentifier.getCommentOrder(), comment, imageURL);
     }
 
     public void deleteComment(Long commentId){
@@ -83,6 +88,43 @@ public class CommentService {
             } else {
                 commentRepository.delete(comment);
             }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public CommentListResponseDto findAll(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        List<CommentList> comments = commentRepository.findAllByPost(post).stream()
+                .map(comment -> CommentList.of(comment,
+                                commentIdentifierRepository.getCommentOrder(comment.getUser(), comment.getPost()),
+                                commentRepository.findAllByParent(comment.getCommentId()).stream()
+                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost())))
+                                        .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        return CommentListResponseDto.of(comments);
+    }
+
+    public boolean clickCommentLike(Long commentId){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CustomException(COMMENT_NOT_FOUND));
+
+        if (comment.getUser() == user) {
+            throw new CustomException(LIKE_DENIED);
+        }
+
+        Optional<CommentLike> existCommentLike = commentLikeRepository.findByUserAndComment(user, comment);
+        if(existCommentLike.isPresent()) {
+            commentLikeRepository.delete(existCommentLike.get());
+            return false;
+        } else {
+            CommentLike commentLike = CommentLike.createCommentLike(user,comment);
+            commentLikeRepository.save(commentLike);
+            return true;
         }
     }
 }

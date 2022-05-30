@@ -1,7 +1,6 @@
 package server.sookdak.domain;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +20,7 @@ public class Board {
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @NotNull(message = "이름을 입력해주세요")
