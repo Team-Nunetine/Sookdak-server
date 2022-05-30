@@ -2,7 +2,12 @@ package server.sookdak.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import server.sookdak.domain.Chat;
+import server.sookdak.dto.req.ChatRequsetDto;
 import server.sookdak.dto.req.ChatRoomSaveRequestDto;
 import server.sookdak.dto.res.chat.*;
 import server.sookdak.service.ChatService;
@@ -28,4 +33,14 @@ public class ChatApi {
         ChatRoomResponseDto responseDto = chatService.saveChatRoom(chatRoomSaveRequestDto);
         return ChatRoomResponse.newResponse(CHATROOM_CREATE_SUCCESS, responseDto);
     }
+
+
+    @MessageMapping("/{roomId}")
+    @SendTo("/room/{roodId}")
+    public ChatResponseDto send(@DestinationVariable Long roomId, ChatRequsetDto chatRequsetDto) {
+        Chat chat = chatService.sendChat(roomId,chatRequsetDto.getContent());
+        return ChatResponseDto.of(chat);
+    }
+
+
 }
