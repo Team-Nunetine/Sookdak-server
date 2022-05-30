@@ -26,7 +26,7 @@ public class LectureApi {
         return LectureResponse.newResponse(LECTURE_READ_SUCCESS, response);
     }
 
-    @GetMapping("/search/{page}")
+    @PostMapping("/search/{page}")
     public ResponseEntity<LectureResponse> searchLecture(@RequestBody Map<String, String> word, @PathVariable int page) {
         LectureResponseDto response = lectureService.searchLecture(word.get("word"), page);
 
