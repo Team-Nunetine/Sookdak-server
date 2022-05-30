@@ -3,6 +3,7 @@ package server.sookdak.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import server.sookdak.domain.Chat;
 import server.sookdak.domain.ChatRoom;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.ChatRoomSaveRequestDto;
@@ -11,6 +12,7 @@ import server.sookdak.dto.res.chat.ChatRoomListResponseDto.ChatRoomList;
 import server.sookdak.dto.res.chat.ChatRoomResponseDto;
 import server.sookdak.exception.CustomException;
 
+import server.sookdak.repository.ChatRepository;
 import server.sookdak.repository.ChatRoomRepository;
 import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
@@ -27,6 +29,7 @@ import static server.sookdak.constants.ExceptionCode.*;
 @RequiredArgsConstructor
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRepository chatRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -47,6 +50,19 @@ public class ChatService {
 
         return ChatRoomResponseDto.of(chatRoom);
 
+    }
+
+    public Chat sendChat(Long roomId, String msg) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        return chatRepository.save(Chat.createChat(user, chatRoom, msg, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"))));
+    }
+
+    public List<Chat> showChat(Long roomId){
+        return chatRepository.findAllByChatRoom(roomId);
     }
 
 }
