@@ -32,6 +32,7 @@ public enum ExceptionCode {
     SCRAP_DENIED(FORBIDDEN, "본인이 쓴 글은 스크랩할 수 없습니다."),
     WARN_DENIED(FORBIDDEN, "본인이 쓴 글은 신고할 수 없습니다."),
     RE_COMMENT_ONLY(FORBIDDEN, "댓글은 답글까지만 달 수 있습니다."),
+    MESSAGE_DENIED(FORBIDDEN, "본인이 쓴 글에 쪽지를 보낼 수 없습니다."),
 
     /* 404 - 찾을 수 없는 리소스 */
     MEMBER_EMAIL_NOT_FOUND(NOT_FOUND, "가입되지 않은 이메일입니다."),
@@ -39,6 +40,7 @@ public enum ExceptionCode {
     POST_NOT_FOUND(NOT_FOUND, "게시글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
     LECTURE_NOT_FOUND(NOT_FOUND, "강의를 찾을 수 없습니다."),
+    MESSAGE_ROOM_NOT_FOUND(NOT_FOUND, "쪽지함을 찾을 수 없습니다."),
 
     /* 409 - 중복된 리소스 */
     DUPLICATE_BOARD_NAME(CONFLICT, "이미 해당 이름을 가진 게시판이 있습니다."),
