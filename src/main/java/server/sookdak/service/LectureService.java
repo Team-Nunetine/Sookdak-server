@@ -61,57 +61,67 @@ public class LectureService {
         return LectureResponseDto.of(lectures);
     }
 
-    public SuccessCode addTimetable(Long lectureId) {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+    public void addTimetable(Long lectureId) {
+        User user = getUser();
 
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(LECTURE_NOT_FOUND));
 
         Optional<Timetable> existTimetable = timetableRepository.findById(new LectureId(user.getUserId(), lecture.getLectureId()));
-        if (existTimetable.isEmpty()) {
-            // 요일, 시간 파싱해서 저장
-            String datetime = lecture.getDatetime();
-            Day day1 = null, day2 = null;
-            LocalTime startTime = null, endTime = null;
-
-            int i = 0;
-            if (!datetime.equals("")) {
-                while (true) {
-                    char c = datetime.charAt(i);
-                    if (Character.isDigit(c)) {
-                        break;
-                    }
-                    if (i == 0) {
-                        day1 = Day.nameOf(Character.toString(c));
-                    }
-                    if (i == 1) {
-                        day2 = Day.nameOf(Character.toString(c));
-                    }
-                    i++;
-                }
-                startTime = LocalTime.of(Integer.parseInt(datetime.substring(i, i + 2)), Integer.parseInt(datetime.substring(i + 3, i + 5)));
-                endTime = LocalTime.of(Integer.parseInt(datetime.substring(i + 6, i + 8)), Integer.parseInt(datetime.substring(i + 9, i + 11)));
-
-                // 추가된 강의 중 겹치는 시간 찾기
-                List<Timetable> timetables = timetableRepository.getTimetableWithDatetime(day1, day2, startTime, endTime, user);
-                if (timetables.size() > 0) {
-                    throw new CustomException(DUPLICATE_LECTURE_DATETIME);
-                }
-            }
-            Timetable timetable = Timetable.createTimetable(user, lecture, day1, day2, startTime, endTime);
-            timetableRepository.save(timetable);
-            return TIMETABLE_ADD_SUCCESS;
+        if (existTimetable.isPresent()) {
+            throw new CustomException(ALREADY_ADD_LECTURE);
         }
-        existTimetable.ifPresent(timetableRepository::delete);
-        return TIMETABLE_DELETE_SUCCESS;
+
+        // 요일, 시간 파싱해서 저장
+        String datetime = lecture.getDatetime();
+        Day day1 = null, day2 = null;
+        LocalTime startTime = null, endTime = null;
+
+        int i = 0;
+        if (!datetime.equals("")) {
+            while (true) {
+                char c = datetime.charAt(i);
+                if (Character.isDigit(c)) {
+                    break;
+                }
+                if (i == 0) {
+                    day1 = Day.nameOf(Character.toString(c));
+                }
+                if (i == 1) {
+                    day2 = Day.nameOf(Character.toString(c));
+                }
+                i++;
+            }
+            startTime = LocalTime.of(Integer.parseInt(datetime.substring(i, i + 2)), Integer.parseInt(datetime.substring(i + 3, i + 5)));
+            endTime = LocalTime.of(Integer.parseInt(datetime.substring(i + 6, i + 8)), Integer.parseInt(datetime.substring(i + 9, i + 11)));
+
+            // 추가된 강의 중 겹치는 시간 찾기
+            List<Timetable> timetables = timetableRepository.getTimetableWithDatetime(day1, day2, startTime, endTime, user);
+            if (timetables.size() > 0) {
+                throw new CustomException(DUPLICATE_LECTURE_DATETIME);
+            }
+        }
+        Timetable timetable = Timetable.createTimetable(user, lecture, day1, day2, startTime, endTime);
+        timetableRepository.save(timetable);
+    }
+
+    public void deleteTimetable(Long lectureId) {
+        User user = getUser();
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new CustomException(LECTURE_NOT_FOUND));
+
+        Optional<Timetable> timetable = timetableRepository.findByUserAndLecture(user, lecture);
+
+        if (timetable.isEmpty()) {
+            throw new CustomException(LECTURE_NOT_ADD);
+        }
+
+        timetableRepository.delete(timetable.get());
     }
 
     public UserTimetableResponseDto getTimetable() {
-        String userEmail = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = getUser();
 
         List<UserTimetable> userTimetable = timetableRepository.findAllByUser(user).stream()
                 .map(UserTimetable::of)
@@ -124,5 +134,11 @@ public class LectureService {
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         List<Lecture> lectures = webDriverUtil.useDriver("https://everytime.kr/login", id, password);
         lectureRepository.saveAll(lectures);
+    }
+
+    private User getUser() {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 }
