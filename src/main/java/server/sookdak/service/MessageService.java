@@ -2,6 +2,7 @@ package server.sookdak.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.domain.Message;
@@ -9,6 +10,7 @@ import server.sookdak.domain.MessageRoom;
 import server.sookdak.domain.Post;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.MessageRequestDto;
+import server.sookdak.dto.res.message.MessageDetailResponseDto;
 import server.sookdak.dto.res.message.MessageRoomResponseDto;
 import server.sookdak.dto.res.message.MessageSendResponseDto;
 import server.sookdak.exception.CustomException;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static server.sookdak.constants.ExceptionCode.*;
+import static server.sookdak.dto.res.message.MessageDetailResponseDto.*;
 import static server.sookdak.dto.res.message.MessageRoomResponseDto.*;
 import static server.sookdak.dto.res.message.MessageRoomResponseDto.RoomList.*;
 
@@ -87,6 +90,20 @@ public class MessageService {
         Collections.sort(rooms);
 
         return MessageRoomResponseDto.of(rooms);
+    }
+
+    public MessageDetailResponseDto getMessageDetail(Long roomId, int page) {
+        User user = getUser();
+
+        MessageRoom messageRoom = messageRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(MESSAGE_ROOM_NOT_FOUND));
+
+        PageRequest pageRequest = PageRequest.of(page, 50);
+        List<MessageDto> messages = messageRepository.findByMessageRoomOrderByCreatedAtDesc(messageRoom, pageRequest).stream()
+                .map(message -> MessageDto.of(message, message.getSender().equals(user)))
+                .collect(Collectors.toList());
+
+        return MessageDetailResponseDto.of(messages);
     }
 
     private User getUser() {
