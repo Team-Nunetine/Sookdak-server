@@ -29,14 +29,15 @@ public class CommentListResponseDto {
         private String content;
         private String imageURL;
         private int likes;
+        private boolean writer;
+        private boolean userLiked;
         private String createdAt;
         private List<CommentList> reply;
 
 
 
 
-        public static CommentList of(Comment comment, int commentOrder, List<CommentList> reply) {
-
+        public static CommentList of(Comment comment, int commentOrder, boolean writer, boolean userLiked, List<CommentList> reply) {
             CommentList commentList = new CommentList();
             commentList.commentOrder = commentOrder;
             commentList.commentId = comment.getCommentId();
@@ -47,13 +48,15 @@ public class CommentListResponseDto {
             }
             commentList.createdAt = comment.getCreatedAt();
             commentList.likes = comment.getLikes().size();
+            commentList.writer = writer;
+            commentList.userLiked = userLiked;
             commentList.reply = reply;
 
 
             return commentList;
         }
 
-        public static CommentList createReply(Comment comment, int commentOrder) {
+        public static CommentList createReply(Comment comment, int commentOrder, boolean writer, boolean userLiked) {
 
             CommentList commentList = new CommentList();
             commentList.commentOrder = commentOrder;
@@ -65,6 +68,8 @@ public class CommentListResponseDto {
             }
             commentList.createdAt = comment.getCreatedAt();
             commentList.likes = comment.getLikes().size();
+            commentList.writer = writer;
+            commentList.userLiked = userLiked;
 
             return commentList;
         }
