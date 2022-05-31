@@ -2,13 +2,11 @@ package server.sookdak.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import server.sookdak.domain.Day;
-import server.sookdak.domain.LectureId;
-import server.sookdak.domain.Timetable;
-import server.sookdak.domain.User;
+import server.sookdak.domain.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TimetableRepository extends JpaRepository<Timetable, LectureId> {
 
@@ -16,4 +14,6 @@ public interface TimetableRepository extends JpaRepository<Timetable, LectureId>
     List<Timetable> getTimetableWithDatetime(Day day1, Day day2, LocalTime startTime, LocalTime endTime, User user);
 
     List<Timetable> findAllByUser(User user);
+
+    Optional<Timetable> findByUserAndLecture(User user, Lecture lecture);
 }

@@ -34,10 +34,17 @@ public class LectureApi {
     }
 
     @PostMapping("/{lectureId}")
-    public ResponseEntity<TimetableResponse> userTimetable(@PathVariable Long lectureId) {
-        SuccessCode successCode = lectureService.addTimetable(lectureId);
+    public ResponseEntity<TimetableResponse> addTimetable(@PathVariable Long lectureId) {
+        lectureService.addTimetable(lectureId);
 
-        return TimetableResponse.newResponse(successCode);
+        return TimetableResponse.newResponse(TIMETABLE_ADD_SUCCESS);
+    }
+
+    @DeleteMapping("/{lectureId}")
+    public ResponseEntity<TimetableResponse> deleteTimetable(@PathVariable Long lectureId) {
+        lectureService.deleteTimetable(lectureId);
+
+        return TimetableResponse.newResponse(TIMETABLE_DELETE_SUCCESS);
     }
 
     @GetMapping("")
