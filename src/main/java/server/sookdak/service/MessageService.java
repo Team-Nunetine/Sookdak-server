@@ -9,6 +9,7 @@ import server.sookdak.domain.MessageRoom;
 import server.sookdak.domain.Post;
 import server.sookdak.domain.User;
 import server.sookdak.dto.req.MessageRequestDto;
+import server.sookdak.dto.res.message.MessageRoomResponseDto;
 import server.sookdak.dto.res.message.MessageSendResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.MessageRepository;
@@ -17,9 +18,15 @@ import server.sookdak.repository.PostRepository;
 import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static server.sookdak.constants.ExceptionCode.*;
+import static server.sookdak.dto.res.message.MessageRoomResponseDto.*;
+import static server.sookdak.dto.res.message.MessageRoomResponseDto.RoomList.*;
 
 @Service
 @Transactional
@@ -65,6 +72,21 @@ public class MessageService {
 
         Message message = Message.createMessage(messageRoom, user, messageRequestDto.getContent());
         messageRepository.save(message);
+    }
+
+    public MessageRoomResponseDto getMessageRoom() {
+        User user = getUser();
+
+        List<MessageRoom> roomList = Stream.concat(messageRoomRepository.findByUser(user).stream(), messageRoomRepository.findByUserPost(user).stream())
+                .collect(Collectors.toList());
+
+        List<RoomList> rooms = roomList.stream().
+                map(room -> of(room, messageRepository.findFirstByMessageRoomOrderByCreatedAtDesc(room)))
+                .collect(Collectors.toList());
+
+        Collections.sort(rooms);
+
+        return MessageRoomResponseDto.of(rooms);
     }
 
     private User getUser() {

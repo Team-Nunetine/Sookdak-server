@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.sookdak.dto.req.MessageRequestDto;
-import server.sookdak.dto.res.message.MessageResponse;
-import server.sookdak.dto.res.message.MessageSendResponse;
-import server.sookdak.dto.res.message.MessageSendResponseDto;
+import server.sookdak.dto.res.message.*;
 import server.sookdak.service.MessageService;
 
 import javax.validation.Valid;
 
-import static server.sookdak.constants.SuccessCode.MESSAGE_REPLY_SUCCESS;
-import static server.sookdak.constants.SuccessCode.MESSAGE_SEND_SUCCESS;
+import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,5 +32,12 @@ public class MessageApi {
         messageService.replyMessage(messageRequestDto, roomId);
 
         return MessageResponse.newResponse(MESSAGE_REPLY_SUCCESS);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<MessageRoomResponse> getMessageRoom() {
+        MessageRoomResponseDto response = messageService.getMessageRoom();
+
+        return MessageRoomResponse.newResponse(MESSAGE_ROOM_READ_SUCCESS, response);
     }
 }
