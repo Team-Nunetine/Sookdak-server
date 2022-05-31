@@ -93,13 +93,19 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public CommentListResponseDto findAll(Long postId){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
         List<CommentList> comments = commentRepository.findAllByPost(post).stream()
                 .map(comment -> CommentList.of(comment,
                                 commentIdentifierRepository.getCommentOrder(comment.getUser(), comment.getPost()),
+                                comment.getUser().equals(user),
+                                commentLikeRepository.existsByUserAndComment(user, comment),
                                 commentRepository.findAllByParent(comment.getCommentId()).stream()
-                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost())))
+                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost()),reply.getUser().equals(user), commentLikeRepository.existsByUserAndComment(user, reply)))
                                         .collect(Collectors.toList())))
                 .collect(Collectors.toList());
         return CommentListResponseDto.of(comments);
