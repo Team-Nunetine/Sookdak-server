@@ -47,6 +47,7 @@ public enum SuccessCode {
 
     MESSAGE_SEND_SUCCESS(OK, "쪽지 작성에 성공했습니다."),
     MESSAGE_REPLY_SUCCESS(OK, "쪽지 답장에 성공했습니다."),
+    MESSAGE_ROOM_READ_SUCCESS(OK, "쪽지 목록 조회에 성공했습니다."),
 
     COMMENT_LIST_READ_SUCCESS(OK, "댓글 목록 조회에 성공했습니다."),
     CHATROOM_READ_SUCCESS(OK,"채팅방 목록 조회에 성공했습니다."),
