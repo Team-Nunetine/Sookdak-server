@@ -20,7 +20,7 @@ public class MessageApi {
 
     @PostMapping("/{postId}/save")
     public ResponseEntity<MessageSendResponse> sendMessage(@Valid @RequestBody MessageRequestDto messageRequestDto,
-                                                                    @PathVariable Long postId) {
+                                                           @PathVariable Long postId) {
         MessageSendResponseDto response = messageService.sendMessage(messageRequestDto, postId);
 
         return MessageSendResponse.newResponse(MESSAGE_SEND_SUCCESS, response);
@@ -39,5 +39,12 @@ public class MessageApi {
         MessageRoomResponseDto response = messageService.getMessageRoom();
 
         return MessageRoomResponse.newResponse(MESSAGE_ROOM_READ_SUCCESS, response);
+    }
+
+    @GetMapping("/{roomId}/{page}")
+    public ResponseEntity<MessageDetailResponse> getMessageDetail(@PathVariable Long roomId, @PathVariable int page) {
+        MessageDetailResponseDto response = messageService.getMessageDetail(roomId, page);
+
+        return MessageDetailResponse.newResponse(MESSAGE_READ_SUCCESS, response);
     }
 }
