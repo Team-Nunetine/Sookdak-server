@@ -1,9 +1,11 @@
 package server.sookdak.dto.res.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.sookdak.domain.Post;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -26,7 +28,8 @@ public class PostListResponseDto {
     public static class PostList {
         private Long postId;
         private String content;
-        private String createdAt;
+        @JsonFormat(pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
+        private LocalDateTime createdAt;
         private int likes;
         private int comments;
         private boolean image;
