@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static server.sookdak.constants.SuccessCode.*;
@@ -125,4 +126,11 @@ public class PostApi {
         return PostResponse.newResponse(POST_WARN_SUCCESS);
     }
 
+    @PostMapping("/search/{boardId}/{page}")
+    public ResponseEntity<SearchPostListResponse> searchPost(@RequestBody Map<String, String> word,
+                                                         @PathVariable Long boardId, @PathVariable int page) {
+        SearchPostListResponseDto response = postService.search(word.get("word"), boardId, page);
+
+        return SearchPostListResponse.newResponse(POST_SEARCH_SUCCESS, response);
+    }
 }
