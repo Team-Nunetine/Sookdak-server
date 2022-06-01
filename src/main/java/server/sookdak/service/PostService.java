@@ -10,13 +10,14 @@ import server.sookdak.dto.res.post.MyPostListResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto;
 import server.sookdak.dto.res.post.PostDetailResponseDto.PostDetail;
 import server.sookdak.dto.res.post.PostListResponseDto;
+import server.sookdak.dto.res.post.SearchPostListResponseDto;
+import server.sookdak.dto.res.post.SearchPostListResponseDto.SearchPostList;
 import server.sookdak.exception.CustomException;
 import server.sookdak.repository.*;
 import server.sookdak.util.S3Util;
 import server.sookdak.util.SecurityUtil;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class PostService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
 
-        Post post = Post.createPost(user, board, postSaveRequestDto.getContent(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
+        Post post = Post.createPost(user, board, postSaveRequestDto.getContent(), LocalDateTime.now());
 
         List<PostImage> postImages = new ArrayList<>();
         for (String imageURL : imageURLs) {
@@ -213,7 +214,7 @@ public class PostService {
         User user = getUser();
 
         PageRequest pageRequest = PageRequest.of(page, 20);
-        List<PostList> posts = postRepository.findAllByUserOrderByCreatedAtDescPostIdDesc(user, pageRequest).stream()
+        List<PostList> posts = postRepository.findAllByUserOrderByPostIdDesc(user, pageRequest).stream()
                 .map(PostList::of)
                 .collect(Collectors.toList());
 
@@ -264,6 +265,26 @@ public class PostService {
         if (count == 5) {
             postRepository.deletePost(post.getPostId());
         }
+    }
+
+    public SearchPostListResponseDto search(String word, Long boardId, int page) {
+        User user = getUser();
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        if (boardId == 0) {
+            List<SearchPostList> posts = postRepository.searchPost(word, pageRequest).stream()
+                    .map(SearchPostList::of)
+                    .collect(Collectors.toList());
+            return SearchPostListResponseDto.of(posts);
+        }
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(BOARD_NOT_FOUND));
+        List<SearchPostList> posts = postRepository.searchBoardPost(word, board, pageRequest).stream()
+                .map(SearchPostList::of)
+                .collect(Collectors.toList());
+        return SearchPostListResponseDto.of(posts);
     }
 
     private User getUser() {
