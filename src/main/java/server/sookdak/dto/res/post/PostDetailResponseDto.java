@@ -1,8 +1,10 @@
 package server.sookdak.dto.res.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -22,7 +24,8 @@ public class PostDetailResponseDto {
     @NoArgsConstructor
     public static class PostDetail {
         private String content;
-        private String createdAt;
+        @JsonFormat(pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
+        private LocalDateTime createdAt;
         private int likes;
         private int scraps;
         private int comments;
@@ -31,7 +34,7 @@ public class PostDetailResponseDto {
         private boolean userLiked;
         private boolean userScrapped;
 
-        public PostDetail(String content, String createdAt, int likes, int scraps, int comments, List<String> images, boolean writer, boolean userLiked, boolean userScrapped) {
+        public PostDetail(String content, LocalDateTime createdAt, int likes, int scraps, int comments, List<String> images, boolean writer, boolean userLiked, boolean userScrapped) {
             this.content = content;
             this.createdAt = createdAt;
             this.likes = likes;

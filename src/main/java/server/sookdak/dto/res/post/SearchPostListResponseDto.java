@@ -10,35 +10,35 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class PostListResponseDto {
-    private boolean star;
-    private List<PostList> posts;
+public class SearchPostListResponseDto {
+    private List<SearchPostList> posts;
 
-    private PostListResponseDto(boolean star, List<PostList> posts) {
-        this.star = star;
+    private SearchPostListResponseDto(List<SearchPostList> posts) {
         this.posts = posts;
     }
 
-    public static PostListResponseDto of(boolean star, List<PostList> posts) {
-        return new PostListResponseDto(star, posts);
+    public static SearchPostListResponseDto of(List<SearchPostList> posts) {
+        return new SearchPostListResponseDto(posts);
     }
 
     @Getter
     @NoArgsConstructor
-    public static class PostList {
+    public static class SearchPostList {
         private Long postId;
         private String content;
         @JsonFormat(pattern = "yyyy/MM/dd HH:mm", timezone = "Asia/Seoul")
         private LocalDateTime createdAt;
+        private String boardName;
         private int likes;
         private int comments;
         private boolean image;
 
-        public static PostList of(Post post) {
-            PostList postList = new PostList();
+        public static SearchPostList of(Post post) {
+            SearchPostList postList = new SearchPostList();
             postList.postId = post.getPostId();
             postList.content = post.getContent();
             postList.createdAt = post.getCreatedAt();
+            postList.boardName = post.getBoard().getName();
             postList.likes = post.getLikes().size();
             postList.comments = post.getComments().size();
             if (post.getImages().size() > 0) {
