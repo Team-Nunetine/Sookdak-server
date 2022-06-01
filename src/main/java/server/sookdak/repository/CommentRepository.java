@@ -20,5 +20,10 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     @Query("select c from Comment c where c.parent = ?1")
     List<Comment> findAllByParent(Long parent);
 
+    @Query("select distinct c.parent from Comment c where c.parent <> 0 and c.post=?1")
+    List<Long> findReplies(Post post);
+
+    @Query("select count(c) from Comment c where c.commentId=?1")
+    int countReplyParent(Long parent);
 }
 

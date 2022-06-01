@@ -14,7 +14,7 @@ import server.sookdak.util.SecurityUtil;
 
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public class CommentService {
             }
         }
 
-        Comment comment = Comment.createComment(user, post, parent, commentSaveRequestDto.getContent(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
+        Comment comment = Comment.createComment(user, post, parent, commentSaveRequestDto.getContent(), LocalDateTime.now());
         if (commentSaveRequestDto.getImage() != null) {
             CommentImage commentImage = CommentImage.createCommentImage(comment, imageURL);
             commentImageRepository.save(commentImage);
@@ -70,16 +70,16 @@ public class CommentService {
         return CommentDetailResponseDto.of(commentIdentifier.getCommentOrder(), comment, imageURL);
     }
 
-    public void deleteComment(Long commentId){
+    public void deleteComment(Long commentId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(()-> new CustomException(COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
 
-        if(comment.getUser() != user) {
+        if (comment.getUser() != user) {
             throw new CustomException(WRITER_ONLY_DELETE);
-        }else {
+        } else {
             Optional<CommentImage> existCommentImage = commentImageRepository.findByComment(comment);
             if (existCommentImage.isPresent()) {
                 CommentImage commentImage = existCommentImage.get();
@@ -92,7 +92,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public CommentListResponseDto findAll(Long postId){
+    public CommentListResponseDto findAll(Long postId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -101,34 +101,46 @@ public class CommentService {
 
         List<CommentList> comments = commentRepository.findAllByPost(post).stream()
                 .map(comment -> CommentList.of(comment,
-                                commentIdentifierRepository.getCommentOrder(comment.getUser(), comment.getPost()),
-                                comment.getUser().equals(user),
-                                commentLikeRepository.existsByUserAndComment(user, comment),
-                                commentRepository.findAllByParent(comment.getCommentId()).stream()
-                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost()),reply.getUser().equals(user), commentLikeRepository.existsByUserAndComment(user, reply)))
-                                        .collect(Collectors.toList())))
+                        commentIdentifierRepository.getCommentOrder(comment.getUser(), comment.getPost()),
+                        comment.getUser().equals(user),
+                        commentLikeRepository.existsByUserAndComment(user, comment),
+                        commentRepository.findAllByParent(comment.getCommentId()).stream()
+                                .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost()), reply.getUser().equals(user), commentLikeRepository.existsByUserAndComment(user, reply)))
+                                .collect(Collectors.toList())))
                 .collect(Collectors.toList());
+
+        for (Long replyParent : commentRepository.findReplies(post)) {
+            if (commentRepository.countReplyParent(replyParent) == 0) {
+                List<CommentList> noParentComments = commentRepository.findAllByParent(replyParent).stream()
+                        .map(reply -> CommentList.createReply(reply, commentIdentifierRepository.getCommentOrder(reply.getUser(), reply.getPost()), reply.getUser().equals(user), commentLikeRepository.existsByUserAndComment(user, reply)))
+                        .collect(Collectors.toList());
+                CommentList deleteComment = CommentList.createNull(noParentComments, replyParent);
+                comments.add(deleteComment);
+            }
+        }
+        Collections.sort(comments);
+
         return CommentListResponseDto.of(comments);
     }
 
-    public boolean clickCommentLike(Long commentId){
+    public boolean clickCommentLike(Long commentId) {
         String userEmail = SecurityUtil.getCurrentUserEmail();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(()-> new CustomException(COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
 
         if (comment.getUser() == user) {
             throw new CustomException(LIKE_DENIED);
         }
 
         Optional<CommentLike> existCommentLike = commentLikeRepository.findByUserAndComment(user, comment);
-        if(existCommentLike.isPresent()) {
+        if (existCommentLike.isPresent()) {
             commentLikeRepository.delete(existCommentLike.get());
             return false;
         } else {
-            CommentLike commentLike = CommentLike.createCommentLike(user,comment);
+            CommentLike commentLike = CommentLike.createCommentLike(user, comment);
             commentLikeRepository.save(commentLike);
             return true;
         }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Comment {
     @Column(length = 2000)
     private String content;
 
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     private Long parent;
 
@@ -43,7 +44,7 @@ public class Comment {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<CommentLike> likes = new ArrayList<>();
 
-    public static Comment createComment(User user, Post post, Long parent, String content, String createdAt){
+    public static Comment createComment(User user, Post post, Long parent, String content, LocalDateTime createdAt){
         Comment comment = new Comment();
         comment.user = user;
         comment.post = post;
@@ -52,6 +53,4 @@ public class Comment {
         comment.createdAt = createdAt;
         return comment;
     }
-
-
 }
