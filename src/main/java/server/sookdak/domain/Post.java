@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Post {
     @Column(length = 2000)
     private String content;
 
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> images = new ArrayList<>();
@@ -47,7 +48,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<CommentIdentifier> identifiers = new ArrayList<>();
 
-    public static Post createPost(User user, Board board, String content, String createdAt) {
+    public static Post createPost(User user, Board board, String content, LocalDateTime createdAt) {
         Post post = new Post();
         post.user = user;
         post.board = board;
