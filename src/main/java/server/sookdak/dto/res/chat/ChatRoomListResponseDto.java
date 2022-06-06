@@ -3,6 +3,7 @@ package server.sookdak.dto.res.chat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.sookdak.domain.ChatRoom;
+import server.sookdak.domain.User;
 
 import java.util.List;
 
@@ -18,11 +19,19 @@ public class ChatRoomListResponseDto {
         private Long roomId;
         private String name;
         private String info;
+        private int users;
+        private boolean status;
 
-        public ChatRoomList(ChatRoom entity) {
-            this.roomId = entity.getRoomId();
-            this.name = entity.getName();
-            this.info = entity.getInfo();
+
+        public static ChatRoomList of(ChatRoom chatRoom, boolean status) {
+            ChatRoomList chatRoomList = new ChatRoomList();
+            chatRoomList.roomId = chatRoom.getRoomId();
+            chatRoomList.name = chatRoom.getName();
+            chatRoomList.info = chatRoom.getInfo();
+            chatRoomList.users= chatRoom.getUsers().size();
+            chatRoomList.status = status;
+
+            return chatRoomList;
         }
     }
 }
