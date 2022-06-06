@@ -42,5 +42,12 @@ public class ChatApi {
         return ChatResponseDto.of(chat);
     }
 
+    @PostMapping("/join/{roomId}")
+    public ResponseEntity<ChatRoomResponse> roomJoin(@PathVariable Long roomId) {
+        ChatRoomResponseDto responseDto = chatService.joinChatRoom(roomId);
+        return ChatRoomResponse.newResponse(CHATROOM_JOIN_SUCCESS, responseDto);
+
+    }
+
 
 }
