@@ -34,8 +34,12 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public ChatRoomListResponseDto findAllDesc(){
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         List<ChatRoomList> rooms = chatRoomRepository.findAllDesc().stream()
-                .map(ChatRoomList::new)
+                .map(chatRoom -> ChatRoomList.of(chatRoom,
+                        chatRoom.getUsers().contains(user)))
                 .collect(Collectors.toList());
         return ChatRoomListResponseDto.of(rooms);
     }
@@ -47,6 +51,7 @@ public class ChatService {
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(user, chatRoomSaveRequestDto.getName(), chatRoomSaveRequestDto.getInfo(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
         chatRoomRepository.save(chatRoom);
+        chatRoom.getUsers().add(user);
 
         return ChatRoomResponseDto.of(chatRoom);
 
@@ -63,6 +68,20 @@ public class ChatService {
 
     public List<Chat> showChat(Long roomId){
         return chatRepository.findAllByChatRoom(roomId);
+    }
+
+    public ChatRoomResponseDto joinChatRoom(Long roomId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new CustomException(ROOM_NOT_FOUND));
+        boolean  existUser = chatRoom.getUsers().contains(user);
+        if(existUser) {
+            throw new CustomException(ALREADY_JOIN);
+        }
+        chatRoom.getUsers().add(user);
+        return ChatRoomResponseDto.of(chatRoom);
     }
 
 }
