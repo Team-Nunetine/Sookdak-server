@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.sookdak.constants.ExceptionCode;
+import server.sookdak.domain.Star;
 import server.sookdak.domain.User;
 import server.sookdak.dto.res.user.TokenDto;
 import server.sookdak.dto.req.TokenRequestDto;
@@ -16,6 +17,8 @@ import server.sookdak.dto.req.UserRequestDto;
 import server.sookdak.dto.res.user.UserResponseDto;
 import server.sookdak.exception.CustomException;
 import server.sookdak.jwt.TokenProvider;
+import server.sookdak.repository.BoardRepository;
+import server.sookdak.repository.StarRepository;
 import server.sookdak.repository.UserRepository;
 import server.sookdak.util.SecurityUtil;
 
@@ -25,6 +28,8 @@ import server.sookdak.util.SecurityUtil;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final StarRepository starRepository;
+    private final BoardRepository boardRepository;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
@@ -48,6 +53,11 @@ public class UserService {
             // signup
             User user = userRequestDto.toUser(passwordEncoder, key);
             userRepository.save(user);
+
+            for (long i = 1L; i <= 8L; i++) {
+                Star star = Star.createStar(user, boardRepository.findById(i).orElseThrow(() -> new CustomException(ExceptionCode.BOARD_NOT_FOUND)));
+                starRepository.save(star);
+            }
         }
 
         //1. AuthenticationToken 생성
