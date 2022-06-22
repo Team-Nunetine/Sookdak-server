@@ -49,5 +49,11 @@ public class ChatApi {
 
     }
 
+    @DeleteMapping("/quit/{roomId}")
+    public ResponseEntity<ChatStatusResponse> quitChatRoom(@PathVariable Long roomId) {
+        chatService.quitChatRoom(roomId);
+        return ChatStatusResponse.newResponse(CHATROOM_QUIT_SUCCESS);
+    }
+
 
 }

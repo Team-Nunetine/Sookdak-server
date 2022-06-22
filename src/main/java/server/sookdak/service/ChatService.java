@@ -84,4 +84,18 @@ public class ChatService {
         return ChatRoomResponseDto.of(chatRoom);
     }
 
+    public void quitChatRoom(Long roomId) {
+        String userEmail = SecurityUtil.getCurrentUserEmail();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new CustomException(ROOM_NOT_FOUND));
+        if (chatRoom.getUsers().contains(user)) {
+            chatRoom.getUsers().remove(user);
+        }else {
+            throw new CustomException(ROOM_NOT_FOUND);
+        }
+    }
+
+
 }
