@@ -27,7 +27,7 @@ public class BoardApi {
         return BoardListResponse.newResponse(BOARD_READ_SUCCESS, responseDto);
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<BoardResponse> save(@Valid @RequestBody BoardSaveRequestDto boardSaveRequestDto) {
         BoardResponseDto responseDto = boardService.saveBoard(boardSaveRequestDto);
         return BoardResponse.newResponse(BOARD_SAVE_SUCCESS,responseDto);
