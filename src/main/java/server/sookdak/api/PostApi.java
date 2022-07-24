@@ -21,13 +21,13 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 public class PostApi {
 
     private final PostService postService;
     private final S3Util s3Util;
 
-    @PostMapping("/{boardId}/save")
+    @PostMapping("/{boardId}")
     public ResponseEntity<PostDetailResponse> savePost(@PathVariable Long boardId,
                                                        @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) throws IOException {
 
@@ -50,7 +50,7 @@ public class PostApi {
         return PostDetailResponse.newResponse(POST_SAVE_SUCCESS, responseDto);
     }
 
-    @PostMapping("/{postId}")
+    @PutMapping("/{postId}")
     public ResponseEntity<PostDetailResponse> editPost(@PathVariable Long postId,
                                                        @Valid @ModelAttribute PostSaveRequestDto postSaveRequestDto) {
 

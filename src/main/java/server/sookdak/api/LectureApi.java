@@ -14,7 +14,7 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/lecture")
+@RequestMapping("/api/lectures")
 public class LectureApi {
 
     private final LectureService lectureService;

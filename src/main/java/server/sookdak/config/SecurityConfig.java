@@ -42,14 +42,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/**").permitAll() //인증 없이 접근 허용
-                .antMatchers("/api/board/**").permitAll()
-                .antMatchers("/api/post/**").permitAll()
-                .antMatchers("/api/star/**").permitAll()
-                .antMatchers("/api/comment/**").permitAll()
-                .antMatchers("/api/lecture/**").permitAll()
+                .antMatchers("/api/users/**").permitAll() //인증 없이 접근 허용
+                .antMatchers("/api/boards/**").permitAll()
+                .antMatchers("/api/posts/**").permitAll()
+                .antMatchers("/api/stars/**").permitAll()
+                .antMatchers("/api/comments/**").permitAll()
+                .antMatchers("/api/lectures/**").permitAll()
                 .antMatchers("/api/chat/**").permitAll()
-                .antMatchers("/api/message/**").permitAll()
+                .antMatchers("/api/messages/**").permitAll()
                 .antMatchers("/ws-stomp/**").permitAll()
                 .anyRequest().authenticated() //나머지 요청은 모두 인증 필요
 

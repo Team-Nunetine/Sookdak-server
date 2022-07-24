@@ -12,7 +12,7 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/star")
+@RequestMapping("/api/stars")
 public class StarApi {
 
     private final StarService starService;
