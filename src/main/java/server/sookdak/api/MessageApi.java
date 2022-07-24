@@ -13,12 +13,12 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/message")
+@RequestMapping("/api/messages")
 public class MessageApi {
 
     private final MessageService messageService;
 
-    @PostMapping("/{postId}/save")
+    @PostMapping("/post/{postId}")
     public ResponseEntity<MessageSendResponse> sendMessage(@Valid @RequestBody MessageRequestDto messageRequestDto,
                                                            @PathVariable Long postId) {
         MessageSendResponseDto response = messageService.sendMessage(messageRequestDto, postId);
@@ -26,7 +26,7 @@ public class MessageApi {
         return MessageSendResponse.newResponse(MESSAGE_SEND_SUCCESS, response);
     }
 
-    @PostMapping("/{roomId}")
+    @PostMapping("/room/{roomId}")
     public ResponseEntity<MessageResponse> replyMessage(@Valid @RequestBody MessageRequestDto messageRequestDto,
                                                         @PathVariable Long roomId) {
         messageService.replyMessage(messageRequestDto, roomId);

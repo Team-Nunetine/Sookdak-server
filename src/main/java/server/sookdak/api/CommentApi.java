@@ -16,7 +16,7 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api/comments")
 public class CommentApi {
 
     private final CommentService commentService;

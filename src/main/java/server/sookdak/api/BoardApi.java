@@ -16,7 +16,7 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/board")
+@RequestMapping("/api/boards")
 public class BoardApi {
     private final BoardService boardService;
 

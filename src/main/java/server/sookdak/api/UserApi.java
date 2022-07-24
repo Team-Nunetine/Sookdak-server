@@ -22,7 +22,7 @@ import static server.sookdak.constants.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserApi {
 
     private final UserService userService;
@@ -48,28 +48,28 @@ public class UserApi {
         return TokenResponse.toResponse(REISSUE_SUCCESS, tokenDto);
     }
 
-    @GetMapping("/myboard")
+    @GetMapping("/my-board")
     public ResponseEntity<BoardListResponse> findAll() {
         BoardListResponseDto responseDto = boardService.findByUser();
 
         return BoardListResponse.newResponse(BOARD_READ_SUCCESS, responseDto);
     }
 
-    @GetMapping("/mypost/{page}")
+    @GetMapping("/my-post/{page}")
     public ResponseEntity<MyPostListResponse> mypost(@PathVariable int page) {
         MyPostListResponseDto responseDto = postService.getMyPost(page);
 
         return MyPostListResponse.newResponse(POST_LIST_READ_SUCCESS, responseDto);
     }
 
-    @GetMapping("/myscrap/{page}")
+    @GetMapping("/my-scrap/{page}")
     public ResponseEntity<MyPostListResponse> myscrap(@PathVariable int page) {
         MyPostListResponseDto responseDto = postService.getMyScrap(page);
 
         return MyPostListResponse.newResponse(POST_LIST_READ_SUCCESS,responseDto);
     }
 
-    @GetMapping("/mycomment/{page}")
+    @GetMapping("/my-comment/{page}")
     public ResponseEntity<MyPostListResponse> mycomment(@PathVariable int page) {
         MyPostListResponseDto responseDto = postService.getMyComment(page);
 
