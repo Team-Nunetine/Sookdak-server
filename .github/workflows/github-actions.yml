@@ -1,0 +1,82 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  CI-CD:
+    runs-on: ubuntu-latest
+    steps:
+    
+      ## jdk setting
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      ## gradle caching
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      ## create application.yml
+      - name: make application.yml
+        if: contains(github.ref, 'develop') # branch가 develop일 때
+        run: |
+          sudo mkdir -p ./src/main/resources
+          sudo chmod 777 ./src/main/resources
+          cd ./src/main/resources
+          touch ./application.yml
+          # GitHub-Actions에서 설정한 값을 application.yml 파일에 쓰기
+          echo "${{ secrets.PROPERTIES }}" > ./application.yml 
+        shell: bash
+        
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew    
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+        
+  ## time
+  current-time:
+    needs: CI-CD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Current Time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH:mm:ss
+          utcOffset: "+09:00" # 기준이 UTC이기 때문에 한국시간인 KST를 맞추기 위해 9시간 추가
+
+      - name: Print Current Time
+        run: echo "Current Time=${{steps.current-time.outputs.formattedTime}}" # current-time 에서 지정한 포맷대로 현재 시간 출력
+        shell: bash
+
+  ## slack
+  action-slack:
+    needs: CI-CD
+    runs-on: ubuntu-latest
+    steps:
+        - name: Slack Alarm
+          uses: 8398a7/action-slack@v3
+          with:
+              status: ${{ job.status }}
+              author_name: GitHub-Actions CI/CD
+              fields: repo,message,commit,author,ref,job,took
+          env:
+              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+          if: always() # Pick up events even if the job fails or is canceled.
