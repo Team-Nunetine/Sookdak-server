@@ -7,6 +7,12 @@ on:
     branches: [ "develop" ]
   pull_request:
     branches: [ "develop" ]
+    
+env:
+  S3_BUCKET_NAME: sookdak
+  CODE_DEPLOY_APPLICATION_NAME: sookdak-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: sookdak-codedeploy-group
+  
 
 jobs:
   CI-CD:
