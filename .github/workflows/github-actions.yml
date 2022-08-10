@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CI-CD
 
 on:
   push:
@@ -82,7 +82,7 @@ jobs:
             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-            --s3-location bucket=$S3_BUCKET_NAME/build,key=$GITHUB_SHA.zip,bundleType=zip
+            --s3-location bucket=$S3_BUCKET_NAME,key=build/$GITHUB_SHA.zip,bundleType=zip
         
   ## time
   current-time:
