@@ -13,7 +13,7 @@
 |Backend|Backend|Frontend|Frontend|
 |:--:|:--:|:--:|:--:|
 |<img src="https://avatars.githubusercontent.com/yujin113" width=200px />|<img src="https://avatars.githubusercontent.com/dain0826" width=200px />|<img src="https://avatars.githubusercontent.com/tndus77" width=200px />|<img src="https://avatars.githubusercontent.com/yoonyeseul" width=200px />|
-|김유진|손다인|박수연|윤예슬|
+|[김유진](https://github.com/yujin113)|[손다인](https://github.com/dain0826)|[박수연](https://github.com/tndus77)|[윤예슬](https://github.com/yoonyeseul)|
 
 <br>
 
